@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/favicon-16x16-next.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="数据结构 树的存储：  双亲表示法：指出双亲的序号 孩子表示法：一个列表，然后各点链接指出孩子的序号 孩子兄弟表示法：每个点两个位置，左边指向孩子，右边指向兄弟   二叉树  平衡二叉树的特点，有哪些平衡二叉树  二叉排序树的建树与查找过程，并分析最好最坏情况的时间复杂度  单链表是否存在环：fast和slow  查找：顺序、折半  排序(常见的排序算法，并简述实现思路与时间复杂度)  插入排序：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面试专业问题汇总">
+<meta property="og:url" content="http://yoursite.com/2020/03/20/%E9%9D%A2%E8%AF%95%E4%B8%93%E4%B8%9A%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/index.html">
+<meta property="og:site_name" content="Lunter&#39;s blog">
+<meta property="og:description" content="数据结构 树的存储：  双亲表示法：指出双亲的序号 孩子表示法：一个列表，然后各点链接指出孩子的序号 孩子兄弟表示法：每个点两个位置，左边指向孩子，右边指向兄弟   二叉树  平衡二叉树的特点，有哪些平衡二叉树  二叉排序树的建树与查找过程，并分析最好最坏情况的时间复杂度  单链表是否存在环：fast和slow  查找：顺序、折半  排序(常见的排序算法，并简述实现思路与时间复杂度)  插入排序：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2020/05/10/Y3Cf0g.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/05/10/Y3Cohn.md.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/05/14/Y0mS78.md.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/05/14/Y0maND.md.png">
+<meta property="og:image" content="https://iknow-pic.cdn.bcebos.com/b2de9c82d158ccbf310dbe7317d8bc3eb03541c1?x-bce-process=image/resize,m_lfit,w_600,h_800,limit_1">
+<meta property="og:image" content="https://s1.ax1x.com/2020/05/09/YlbtgA.md.png">
+<meta property="og:image" content="https://nos.netease.com/cloud-website-bucket/2018082317352349771e35-270f-4ba5-9a8b-e912696e0c7a.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2020/05/05/YkJpQK.md.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/05/05/YkeGJe.md.png">
+<meta property="og:image" content="https://img-blog.csdn.net/20161005205539869?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="article:published_time" content="2020-03-20T12:41:00.000Z">
+<meta property="article:modified_time" content="2020-11-05T09:42:04.613Z">
+<meta property="article:author" content="Lunter">
+<meta property="article:tag" content="考研">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2020/05/10/Y3Cf0g.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/03/20/%E9%9D%A2%E8%AF%95%E4%B8%93%E4%B8%9A%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>面试专业问题汇总 | Lunter's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lunter's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/20/%E9%9D%A2%E8%AF%95%E4%B8%93%E4%B8%9A%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          面试专业问题汇总
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-20 20:41:00" itemprop="dateCreated datePublished" datetime="2020-03-20T20:41:00+08:00">2020-03-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%8D%E8%AF%95%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">复试系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h3><ul>
+<li><p>树的存储：</p>
+<ul>
+<li>双亲表示法：指出双亲的序号</li>
+<li>孩子表示法：一个列表，然后各点链接指出孩子的序号</li>
+<li>孩子兄弟表示法：每个点两个位置，左边指向孩子，右边指向兄弟</li>
+</ul>
+</li>
+<li><p>二叉树</p>
+</li>
+<li><p>平衡二叉树的特点，有哪些平衡二叉树</p>
+</li>
+<li><p>二叉排序树的建树与查找过程，并分析最好最坏情况的时间复杂度</p>
+</li>
+<li><p>单链表是否存在环：fast和slow</p>
+</li>
+<li><p>查找：顺序、折半</p>
+</li>
+<li><p>排序(常见的排序算法，并简述实现思路与时间复杂度)</p>
+<ul>
+<li><p>插入排序：</p>
+<ul>
+<li>直接插入：依次插入前面已经排好序的子序列中</li>
+<li></li>
+</ul>
+</li>
+<li><p>快排：nlogn 不稳定 基本有序的情况下n^2</p>
+</li>
+<li><p>归并：nlogn 空间复杂度大</p>
+<p><img src="https://s1.ax1x.com/2020/05/10/Y3Cf0g.png" alt=""><br><img src="https://s1.ax1x.com/2020/05/10/Y3Cohn.md.png" alt=""></p>
+</li>
+</ul>
+</li>
+<li><p>最小生成树：</p>
+<ul>
+<li>普林姆：V^2 随机一点，然后找最小边  若结合优先队列可优化为ElogV</li>
+<li>克鲁斯卡尔：ElogE 一直找最小边</li>
+</ul>
+</li>
+<li><p>最短路径：</p>
+<ul>
+<li>迪杰斯特拉：V^2 选定点的边全部入数组，不通则为无穷，不断往里加，判断当前是否比加入后小</li>
+<li>佛洛依德：V^3 所有点，可带负权值</li>
+</ul>
+</li>
+<li><p>分治算法与动态规划算法的特点及区别，还有背包问题的题解</p>
+<ul>
+<li>背包问题：<br><img src="https://s1.ax1x.com/2020/05/14/Y0mS78.md.png" alt=""><br>然后通过<strong>回溯</strong>判断是否装入背包<br><img src="https://s1.ax1x.com/2020/05/14/Y0maND.md.png" alt=""></li>
+</ul>
+</li>
+<li><p>红黑树：自平衡二叉查找树    左旋、右旋、变色</p>
+<ul>
+<li>性质1. 节点是红色或黑色</li>
+<li>性质2. 根节点是黑色</li>
+<li>性质3. 所有叶子都是黑色。（叶子是NIL节点）</li>
+<li>性质4. 每个红色节点的两个子节点都是黑色。（从每个叶子到根的所有路径上不能有两个连续的红色节点）</li>
+<li>性质5. 从任一节点到其每个叶子的所有路径都包含相同数目的黑色节点。</li>
+</ul>
+</li>
+<li><p>辗转相除法<br>  123456 和 7890 的最大公因数是 6，这可由下列步骤（其中，“a mod b”是指取 a ÷ b 的余数）<br>  <img src="https://iknow-pic.cdn.bcebos.com/b2de9c82d158ccbf310dbe7317d8bc3eb03541c1?x-bce-process=image/resize,m_lfit,w_600,h_800,limit_1" alt=""></p>
+</li>
+<li><p>KMP算法</p>
+</li>
+<li><p>并查集：将集合表示成树，往上溯源找根，相同则为同一个集合（几个集合要不相交）</p>
+</li>
+</ul>
+<h3 id="计算机组成原理"><a href="#计算机组成原理" class="headerlink" title="计算机组成原理"></a>计算机组成原理</h3><ul>
+<li><p>冯诺依曼模型：<br>  存储程序：将编写的程序以二进制的形式存放在计算机主存里，然后按其在主存中的首地址执行程序的第一条指令，以后就按该程序的规定顺序执行其他指令，直到程序执行结束。<br>  控制器、运算器、存储器、输入、输出</p>
+</li>
+<li><p>SRAM（cache）、DRAM（主存）、ROM（只读，BIOS以及现在的手机存储  SSD：Flash）   随机存取</p>
+</li>
+<li><p>cache：</p>
+<ul>
+<li>直接映射：唯一        地址映象方式简单，数据访问时，只需检查区号是否相等即可，因而可以得到比较快的访问速度，硬件设备简单；替换操作频繁，命中率比较低</li>
+<li>全相联映射：随意    命中率比较高，Cache存储空间利用率高；访问相关存储器时，每次都要与全部内容比较，速度低，成本高，因而应用少；电路设计实现比较困难</li>
+<li>组相联映射：折中，大有序小随意</li>
+<li>替换策略：<ul>
+<li>随机法</li>
+<li>先进先出</li>
+<li>最近最少使用</li>
+<li>最不经常使用</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>虚拟存储器：</p>
+<ul>
+<li>快表（TLB）：存高速缓冲器  只是副本</li>
+<li>虚地址的虚页号和页表起始地址进行拼接成页表地址，在页表中匹配出实页号（无则I/O，缺页中断），与页内地址结合成实地址</li>
+</ul>
+</li>
+<li><p>指令：操作码+地址码（寻址特征+形式地址）</p>
+<ul>
+<li>指令寻址：直接，寄存器，间接，相对（PC），基址（多道程序），变址（循环、数组）</li>
+</ul>
+</li>
+<li><p>CISC、RISC</p>
+<ul>
+<li>CISC通过微程序</li>
+<li>RISC通过组合逻辑 可通过编译优化生成高效代码 流水线]</li>
+</ul>
+</li>
+<li><p>CPU的五大基本功能：指令控制、操作控制、时间控制、数据加工、中断处理</p>
+</li>
+<li><p>寄存器：</p>
+<ul>
+<li>用户可见：通用寄存器、状态字寄存器（PSW）、PC（地址）、ACC</li>
+<li>不可见：IR（指令）、DR（暂存寄存器）、MAR、MDR</li>
+</ul>
+</li>
+<li><p>中断</p>
+</li>
+<li><p>中断引指令</p>
+</li>
+<li><p>影响流水线的因素：</p>
+<ul>
+<li>结构相关（资源冲突）：停一下，重复配置资源</li>
+<li>数据相关（数据冲突）：暂停，数据旁路技术<ul>
+<li>RAW、WAR、WRW</li>
+</ul>
+</li>
+<li>控制相关（控制冲突）：遇到转移指令        预测</li>
+</ul>
+</li>
+<li><p>总线</p>
+<ul>
+<li>内部总线</li>
+<li>系统总线：数据总线、控制总线、地址总线</li>
+<li>通信总线</li>
+</ul>
+</li>
+<li><p>磁盘阵列：RAID0（无冗余无校验）、RAID1（镜像）、RAID2（海明码）、RAID3（位交叉奇偶校验）、RAID4（块交叉奇偶校验）、RAID5（无独立校验的奇偶校验）</p>
+</li>
+</ul>
+<h3 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h3><ul>
+<li><p>操作系统特征：并发、共享、虚拟、异步（在多道程序环境下，允许多个程序并发执行。但由于资源有限，进程的执行不是一贯到底，而是走走停停，已不可预知的速度向前推进，这就是进程的异步性。）</p>
+</li>
+<li><p>并发和并行</p>
+<ul>
+<li>并发：宏观上同时进行、微观上交替进行</li>
+<li>并行：微观和宏观上都同时</li>
+</ul>
+</li>
+<li><p>系统调用：<br>  <img src="https://s1.ax1x.com/2020/05/09/YlbtgA.md.png" alt=""></p>
+</li>
+<li><p>计算机系统的层次结构：</p>
+<ul>
+<li>虚拟机器M4  高级语言机器</li>
+<li>虚拟机器M3  汇编语言机器</li>
+<li>虚拟机器M2  操作系统机器</li>
+<li>传统机器M1  机器语言机器</li>
+<li>微程序机器M0  微指令机器</li>
+</ul>
+</li>
+<li><p>进程与线程</p>
+<ul>
+<li>进程：进程是一个能独立运行的基本单位，也是系统分配资源的基本方式，进程拥有独立的地址空间，当一个进程崩溃后不会对其他进程产生影响。</li>
+<li>线程：线程是进程的一个实体，是CPU调度和分配的方式，它是比进程更小的能独立运行的基本单位，线程自己基本不拥有资源，它与同属一个进程中的其他线程共享进程中的所有资源，线程之间没有独立的地址空间，因此一个线程死掉后整个进程也就死掉了。</li>
+</ul>
+</li>
+<li><p>处理机的调度</p>
+<ul>
+<li><p>高级（作业）调度：从外存将作业调到内存</p>
+</li>
+<li><p>中级调度：内存将不用的进程挂起到外存，或将外存中的进程激活调入内存</p>
+</li>
+<li><p>低级调度：进程调入cpu的调度</p>
+</li>
+<li><p>调度算法：</p>
+<ul>
+<li>先来先服务：不利于短作业</li>
+<li>短作业优先：不利于长作业</li>
+<li>高响应比：有利短作业，不饥饿</li>
+<li>优先级调度</li>
+<li>时间片轮转</li>
+<li>多级反馈队列</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>进程切换：保存当前进程的上下文-&gt;使用进程调度算法选出就绪队列里的一个进程-&gt;恢复所选进程的上下文-&gt;将CPU控制器交到所选进程手中</p>
+</li>
+<li><p>死锁问题：竞争资源、进程间推进顺序</p>
+<ul>
+<li>必要性：互斥、请求与保持、不可剥夺、循环等待</li>
+<li>死锁处理策略：预防死锁、避免死锁、检测死锁、接触死锁</li>
+</ul>
+</li>
+<li><p>预防死锁：破坏死锁的必要条件</p>
+</li>
+<li><p>避免死锁：银行家算法</p>
+</li>
+<li><p>死锁的检测与解除：资源分配图</p>
+</li>
+<li><p>编译（源程序变成目标模块（各模块有自己的逻辑地址空间））-&gt;链接（组装成一个逻辑地址空间）-&gt;装入（放入内存，物理地址空间）</p>
+</li>
+</ul>
+<ul>
+<li><p>链接的三种方式：</p>
+<ul>
+<li>静态链接</li>
+<li>装入时动态链接</li>
+<li>运行时动态链接：用不到的模块就不会被装入</li>
+</ul>
+</li>
+<li><p>装入的三种方式：</p>
+<ul>
+<li>绝对装入</li>
+<li>静态重定位（可重定位转入）：跳转地址等都写死的</li>
+<li>动态重定位（动态运行时装入）：重定位寄存器</li>
+</ul>
+</li>
+<li><p>内存连续分配管理方式：</p>
+<ul>
+<li>单一连续分配</li>
+<li>固定分区分配</li>
+<li>动态分区分配<ul>
+<li>首次适应：最好</li>
+<li>循环首次适应</li>
+<li>最佳适应</li>
+<li>最差适应</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>非连续分配管理方式：</p>
+<ul>
+<li>基本分页：页表</li>
+<li>基本分段：段长可变，段表</li>
+<li>段页式</li>
+</ul>
+</li>
+<li><p>虚拟页式存储管理：</p>
+<ul>
+<li>请求分页：基本分页要把全部页面调入内存才能开始运行，请求分页则是调入一部分即可</li>
+</ul>
+</li>
+<li><p>块表：存放页表项副本</p>
+</li>
+<li><p>页面分配策略：</p>
+<ul>
+<li>固定分配局部置换</li>
+<li>可变分配全局置换：空闲物理块队列</li>
+<li>可变分配局部置换</li>
+</ul>
+</li>
+<li><p>什么是物理内存？什么是虚拟内存？两者的关系？</p>
+<ul>
+<li>物理内存（内存条）：当打开程序时，系统会将程序自动加载到物理内存上。</li>
+<li>虚拟内存（硬盘）：虚拟内存是代替物理内存行使存储的功能，但无法代替物理内存行使加载程序的功能。</li>
+<li>关系：当运行的程序过多，物理内存不够时，系统会将一部分硬盘空间当内存条使用，这就变成了虚拟内存。</li>
+</ul>
+</li>
+<li><p>分页与分段的区别</p>
+<ul>
+<li>页是信息的物理单位，分页是为了实现离散分配方式，以消减内存的外零头，提高内存的利用率，分页仅仅是系统的需要。</li>
+<li>段是信息的逻辑单位，分段是为了更好的满足用户的需要。</li>
+<li>页的大小固定，分为页号+页内地址。段的长度可变，取决于用户编写的程序。</li>
+<li>分页的作业地址是一维的，分段的地址是作业地址是二维的。</li>
+</ul>
+</li>
+<li><p>cache的作用：cache（高速缓冲存储器）位于CPU和主存之间的，它的容量小，但是速度很快，解决CPU与主存之间速度不匹配的问题。</p>
+</li>
+<li><p>虚拟存储：一部分放入主存，通过缺页异常进行调取</p>
+<ul>
+<li>页面置换算法：<ul>
+<li>最佳置换：之后最长时间不用（无法实现）</li>
+<li>先进先出：Belady异常（物理块数增大，页故障数不增反减）</li>
+<li>最近最久未使用（LRU）</li>
+<li>CLOCK：找0，找时遇1置0</li>
+<li>改进CLOCK：使用位=0，修改位=0  00 01 1置为0 00 01</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>cache和寄存器：</p>
+<ul>
+<li>cache：SRAM 暂存</li>
+<li>寄存器：cpu中，数量较少</li>
+</ul>
+</li>
+<li><p>cache和虚拟存储的异同</p>
+<ul>
+<li><p>相同点</p>
+<ul>
+<li>都是基于程序局部性原理，把程序中最近常用的部分驻留在高速存储器中</li>
+<li>一旦这部分程序不常用，把它们送回到低速存储器中</li>
+<li>这种换入、换出操作是由硬件或操作系统完成，对用户透明</li>
+<li>都力图使存储系统的性能接近高速存储器，而价格接近低速存储器。</li>
+</ul>
+</li>
+<li><p>不同点</p>
+<ul>
+<li>cache解决的是速度问题，虚拟存储器解决的是容量问题</li>
+<li>cache是用硬件实现的，对操作系统透明；虚拟存储用操作系统与硬件结合的方式实现。</li>
+<li>cache是一个物理存储器，而虚拟存储器是一个逻辑存储器，其物理结构建立在主存-辅存的结构基础上。</li>
+<li>在虚拟存储中未命中的性能损失要大于cache系统中未命中的损失。</li>
+<li>CPU与主存有直接通路，如果cache未命中，可以直接与主存通信；而辅存与cpu没有直接通路，虚拟存储系统未命中时，只能有硬盘先调入主存中，不可直接通信。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>硬中断与软中断的区别</p>
+<ul>
+<li>硬中断：硬中断是由硬件产生的，可以直接中断CPU</li>
+<li>软中断：软中断是由当前正在运行的进程产生的，不能中断CPU,软中断是需要内核为正在运行的进程去做一些I/O请求。</li>
+</ul>
+</li>
+<li><p>多线程访问同一资源</p>
+</li>
+<li><p>硬中断与软中断的区别</p>
+<ul>
+<li>硬中断：硬中断是由硬件产生的，可以直接中断CPU</li>
+<li>软中断：软中断是由当前正在运行的进程产生的，不能中断CPU,软中断是需要内核为正在运行的进程去做一些I/O请求。</li>
+</ul>
+</li>
+<li><p>进程的切换：保存PCB和PSW，通过中断来实现</p>
+</li>
+<li><p>一个高级语言（如 C），经过怎样的过程编译成可执行代码</p>
+</li>
+<li><p>堆内存的内存位置，如何申请堆内存，程序在计算机内存的中存放布局</p>
+</li>
+<li><p>进程间通信方式</p>
+<ul>
+<li></li>
+</ul>
+</li>
+<li><p>静态链接库和动态链接库的关系以及在程序执行时的不同调用方式</p>
+</li>
+<li><p>同步异步的区别</p>
+</li>
+<li><p>Windows和Linux文件系统</p>
+<ul>
+<li>windows：FAT16、FAT32（显示链接）、NTFS</li>
+<li>Linux：ext2、ext3、ext4</li>
+</ul>
+</li>
+<li><p>文件分配方式：</p>
+<ul>
+<li>连续分配：第一块地址、连续块数量</li>
+<li>隐式链接分配：链表</li>
+<li>显式连接分配：静态链表    链接表，整个磁盘就一张</li>
+<li>索引分配：索引表（块）</li>
+</ul>
+</li>
+<li><p>混合索引分配方式：直接块、一级索引、二级索引。。。</p>
+</li>
+<li><p>磁盘调度算法：</p>
+<ul>
+<li>先来先服务：局部性较好</li>
+<li>最短寻道时间优先：饥饿</li>
+<li>扫描</li>
+<li>循环扫描</li>
+</ul>
+</li>
+<li><p>I/O控制方式：</p>
+<ul>
+<li>程序直接控制：不可并行</li>
+<li>中断驱动：每次只能读/写一个字，低效</li>
+<li>DMA：按块，无需经过CPU</li>
+<li>通道</li>
+</ul>
+</li>
+</ul>
+<h3 id="计算机网络"><a href="#计算机网络" class="headerlink" title="计算机网络"></a>计算机网络</h3><ul>
+<li><p>OSI七层模型和TCP/IP模型</p>
+<ul>
+<li>OSI:</li>
+<li>TCP/IP：实用的，网络接口层、网络层、传输层、应用层</li>
+</ul>
+</li>
+<li><p>数据链路层：滑动窗口机制</p>
+<ul>
+<li>停止等待</li>
+<li>后退N帧</li>
+<li>选择重传</li>
+</ul>
+</li>
+<li><p>介质访问控制：</p>
+<ul>
+<li>静态划分信道：频、时、波、码</li>
+<li>动态分配信道：<ul>
+<li>轮询（令牌）</li>
+<li>随机访问介质控制：ALOHA、CSMA（1、非、p坚持）、CSMA/CD（碰撞检测：二进制指数退避算法）、CSMA/CA</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>子网划分：子网掩码、CIDR（网络前缀  ）</p>
+</li>
+<li><p>常见协议的工作层次及分析 </p>
+<ul>
+<li>数据链路层：HDLC，PPP</li>
+<li>网络层：IP、ICMP、ARP、IGMP、AS内（RIP应用层udp、OSPF网络层）、AS间（BGP）</li>
+<li>传输层：TCP、UDP</li>
+<li>应用层：HTTP、DNS、DHCP（基于UDP，广播）</li>
+</ul>
+</li>
+<li><p>DNS工作过程：本地域名服务器-&gt;根域名服务器-&gt;顶级域名服务器-&gt;权限域名服务器</p>
+</li>
+<li><p>ICMP：</p>
+<ul>
+<li>差错报文：tracerouter 时间超过</li>
+<li>询问报文：ping 回送请求与回答报文</li>
+</ul>
+</li>
+<li><p>TCP三次握手、四次挥手<a href="https://baijiahao.baidu.com/s?id=1654225744653405133&amp;wfr=spider&amp;for=pc" target="_blank" rel="noopener">https://baijiahao.baidu.com/s?id=1654225744653405133&amp;wfr=spider&amp;for=pc</a></p>
+<ul>
+<li><p>三次握手即可建立TCP连接<br>1 第一次握手SYN=1 seq=x：客户端发送syn包(seq=x)到服务器，并进入SYN_SEND状态，等待服务器确认；</p>
+<p>2 第二次握手SYN=1 ACK=1 seq=y ack=x+1：服务器收到syn包，必须确认客户的SYN(ack=x+1)，同时自己也发送一个SYN包(seq=y)，即SYN+ACK包，此时服务器进入SYN_RECV状态；</p>
+<p>3 第三次握手ACK=1 seq=x+1 ack=y+1：客户端收到服务器的SYN+ACK包，向服务器发送确认包ACK(ack=y+1)，此包发送完毕，客户端和服务器进入ESTABLISHED状态，完成三次握手。</p>
+</li>
+<li><p>四次握手即可断开TCP连接<br>1 第一次握手：主动关闭方发送一个FIN，用来关闭主动方到被动关闭方的数据传送，也就是主动关闭方告诉被动关闭方：我已经不会再给你发数据了(当然，在fin包之前发送出去的数据，如果没有收到对应的ack确认报文，主动关闭方依然会重发这些数据)，但此时主动关闭方还可以接受数据。</p>
+<p>2 第二次握手：被动关闭方收到FIN包后，发送一个ACK给对方，确认序号为收到序号+1(与SYN相同，一个FIN占用一个序号)。</p>
+<p>3 第三次握手：被动关闭方发送一个FIN和ACK，用来关闭被动关闭方到主动关闭方的数据传送，也就是告诉主动关闭方，我的数据也发送完了，不会再给你发数据了。</p>
+<p>4 第四次握手：主动关闭方收到FIN后，发送一个ACK给被动关闭方，确认序号为收到序号+1，至此，完成四次挥手。</p>
+</li>
+</ul>
+</li>
+<li><p>为什么要3次和4次：</p>
+<ul>
+<li>3：防止之前失效的请求再次发送造成错误</li>
+<li>4：全双工双方断开连接</li>
+</ul>
+</li>
+<li><p>TCP实现可靠传输的机制：</p>
+<ul>
+<li>校验</li>
+<li>序号：为每个字节编上序号</li>
+<li>确认：期待的序号，累计确认</li>
+<li>重传：超时，冗余ACK（三个）</li>
+</ul>
+</li>
+<li><p>TCP协议的流量控制和拥塞控制：</p>
+<ul>
+<li><p>流量控制：通过动态控制发送端发送窗口的大小，实现端到端的流量控制的。<br>  接收窗口：由接收端维护，接收端当前的接收缓存大小。<br>  拥塞窗口：由发送端维护，发送端根据当前网络的拥塞程度而确定的窗口值。<br>  发送窗口：由发送端维护，发送端在接收到下-一个确认前能够发送的最大字节数。<br>  发送窗口=min{接收窗口，拥塞窗口}</p>
+</li>
+<li><p>拥塞控制：慢开始和拥塞避免（先指数后线性）、快重传和快恢复</p>
+</li>
+</ul>
+</li>
+<li><p>路由器：路由选择、分组转发</p>
+</li>
+<li><p>TCP/UDP区别</p>
+<ul>
+<li>TCP：面向连接，可靠(序号机制、滑动窗口机制)</li>
+<li>UDP：无连接，不可靠</li>
+</ul>
+</li>
+<li><p>SSL：</p>
+<ul>
+<li>CA机构颁发数字证书给鲍勃（服务器  ）；</li>
+<li>爱丽丝和鲍勃进行SSL握手，爱丽丝通过数字证书确定鲍勃的身份；</li>
+<li>爱丽丝和鲍勃传递三个随机数，第三个随机数通过非对称加密算法进行传递；</li>
+<li>爱丽丝和鲍勃通过一个对称加密算法生成一个对话密钥，加密接下来的通信内容。</li>
+</ul>
+</li>
+<li><p>点开url后的全过程：（ARP，DNS，TCp，IP，HTTP）协议：主机号/域名：端口：目录<br>  1 请求一旦发起，浏览器首先要做的事情就是解析这个域名，一般来说，浏览器会首先查看本地硬盘的 hosts 文件，看看其中有没有和这个域名对应的规则，如果有的话就直接使用 hosts 文件里面的 ip 地址。</p>
+<p>  2 如果在本地的 hosts 文件没有能够找到对应的 ip 地址，浏览器会发出一个 DNS请求到本地DNS服务器.</p>
+<p>  3 建立TCP链接（三次握手）</p>
+<p>  4 客户端发出访问网站相应页面请求（发出http协议请求报文）</p>
+<p>  5 服务端发出相应访问页面的请求信息（发出http）</p>
+<p>  6 断开tcp协议四次挥手过程</p>
+</li>
+<li><p>分层：各层独立，简单化，有利于移植</p>
+</li>
+<li><p>NAT协议的功能，处于tcp/ip协议的哪个层，NAT协议对TCP协议有什么影响</p>
+</li>
+<li><p>FTP：TCP</p>
+<ul>
+<li>控制连接：21     一直打开</li>
+<li>数据连接：20    传完关闭，再传再开</li>
+</ul>
+</li>
+<li><p>邮件：</p>
+<ul>
+<li>SMTP</li>
+<li>POP3</li>
+<li>网页则是：HTTP SMTP HTTP</li>
+</ul>
+</li>
+<li><p>POST 和GET 的区别</p>
+<ul>
+<li>GET：向特定的资源发出请求</li>
+</ul>
+</li>
+</ul>
+<p>　　* POST：向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST请求可能会导致新的资源的建立和/或已有资源的修改</p>
+<p>　　* PUT：向指定资源位置上传其最新内容<br>　　<br>    * OPTIONS：请求查询服务器的性能，或者查询与资源相关的选项和需求 </p>
+<ul>
+<li><p>http头和x-forward-for作用与防范</p>
+</li>
+<li><p>IPV6：128位，更小的路由表（路由聚集），增强组播，支持流，加入自动配置（DHCP），具有更高安全性（IPSEC）</p>
+</li>
+<li><p>XML重在数据本身，HTML重在数据的显示模式</p>
+</li>
+<li><p>PPP协议和HDLC协议</p>
+</li>
+</ul>
+<p>　　* PPP协议是点对点协议，面向字节；HDLC协议是高级数据链路控制，面向比特。</p>
+<p>　　* PPP协议不提供序号和确认机制，只保证无差错接受但是不纠正错误；HDLC协议提供可靠传输。</p>
+<h3 id="网络安全与密码学与Android"><a href="#网络安全与密码学与Android" class="headerlink" title="网络安全与密码学与Android"></a>网络安全与密码学与Android</h3><ul>
+<li><p>网络安全五大属性：</p>
+<ul>
+<li>机密性：Confidentiality</li>
+<li>完整性：Integrity</li>
+<li>可用性：Availability</li>
+<li>真实性：Authentication</li>
+<li>不可抵赖性：Non-Repudiation</li>
+</ul>
+</li>
+<li><p>网络攻击基本模式：        防火墙、IP-MAC映射、IPSec等</p>
+<ul>
+<li>截获：嗅探、监听</li>
+<li>篡改：数据包篡改</li>
+<li>中断：拒绝服务</li>
+<li>伪造：欺骗</li>
+</ul>
+</li>
+<li><p>网络层协议安全分析：IP源地址欺骗</p>
+<ul>
+<li>路由器只根据目标IP地址进行路由转发，不对源IP地址做验证。</li>
+<li>任何人都可以使用原始套接字构造任意源IP地址的数据报。</li>
+<li>响应数据报也将被发回伪造的源IP地址。</li>
+<li>通常用于发起匿名Dos攻击</li>
+</ul>
+</li>
+<li><p>传输层协议安全分析：        身份认证、访问控制</p>
+<ul>
+<li>TCP RST攻击：攻击主机监听通信获取信息后发送RST重置报文，AB通信中断</li>
+<li>TCP会话劫持攻击：伪造虚假TCP数据包</li>
+</ul>
+</li>
+<li><p>SQL注入漏洞<br>  在设计程序时，忽略了对输入字符串中夹带的SQL指令的检查，被数据库误认为是正常的SQL指令而运行，从而使数据库受到攻击，可能导致数据被窃取、更改、删除，以及进一步导致网站被嵌入恶意代码、被植入后门程序等危害。SQL注入攻击通过构造巧妙的SQL语句，同网页提交的内容结合起来进行注入攻击。比较常用的手段有使用注释符号、恒等式（如1＝1）、使用union语句进行联合查询、使用insert或update语句插入或修改数据等，此外还可以利用一些内置函数辅助攻击。被广泛用于非法获取网站控制权，是发生在应用程序的数据库层上的安全漏洞。</p>
+<ul>
+<li><p>SQL注入的位置包括：</p>
+<ul>
+<li>表单提交，主要是POST请求，也包括GET请求；</li>
+<li>URL参数提交，主要为GET请求参数；</li>
+<li>Cookie参数提交；</li>
+<li>HTTP请求头部的一些可修改的值，比如Referer、User_Agent等；</li>
+<li>一些边缘的输入点，比如.mp3文件的一些文件信息等。</li>
+</ul>
+</li>
+<li><p>防范措施：</p>
+<ul>
+<li>所有的查询语句都使用数据库提供的参数化查询接口</li>
+<li>对进入数据库的特殊字符（’”&lt;&gt;&amp;*;等）进行转义处理，或编码转换</li>
+<li>确认每种数据的类型</li>
+<li>数据长度应该严格规定</li>
+<li>网站每个数据层的编码统一，建议全部使用UTF-8编码，上下层编码不一致有可能导致一些过滤模型被绕过</li>
+<li>严格限制网站用户的数据库的操作权限</li>
+<li>避免网站显示SQL错误信息，比如类型错误、字段不匹配等</li>
+<li>权限</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>XSS漏洞：攻击者发现XSS漏洞——构造代码——发送给受害人——受害人打开——攻击者获取受害人的cookie——完成攻击<br>  跨站脚本攻击是指恶意攻击者往Web页面里插入恶意Script代码，当用户浏览该页之时，嵌入其中Web里面的Script代码会被执行，从而达到恶意攻击用户的目的。</p>
+<p>  XSS漏洞通常是通过php的输出函数将javascript代码输出到html页面中，通过用户本地浏览器执行的，所以XSS漏洞关键就是寻找参数未过滤的输出函数。常见的输出函数有： echo、printf、print、print_r、sprintf、die、var-dump、var_export.</p>
+<ul>
+<li><p>分类： </p>
+<ul>
+<li>反射型XSS(非持久化)：若输出函数并未对用户输入进行任何过滤，则当输入javascript代码时就会被执行。如果输入攻击性语句，如<code>document.cookie</code>等就会造成用户的cookie信息、用户浏览器信息等泄露。</li>
+<li>存储型XSS(持久化)：通过未过滤的输入点将恶意脚本上传写入数据库，当有用户访问时就会读取恶意脚本，然后在本地浏览器加载执行。一次提交之后，每当有用户访问这个页面都会受到XSS攻击。</li>
+<li>DOM型XSS：基于文档模型造成的XSS攻击</li>
+</ul>
+</li>
+<li><p>防范措施：</p>
+<ul>
+<li><p>PHP直接输出html的，可以采用以下的方法进行过滤：</p>
+<ul>
+<li>htmlspecialchars函数</li>
+<li>htmlentities函数</li>
+<li>HTMLPurifier.auto.php插件</li>
+<li>RemoveXss函数</li>
+</ul>
+</li>
+<li><p>PHP输出到JS代码中，或者开发Json API的，则需要前端在JS中进行过滤：</p>
+<ul>
+<li>尽量使用innerText(IE)和textContent(Firefox),也就是jQuery的text()来输出文本内容</li>
+<li>必须要用innerHTML等等函数，则需要做类似php的htmlspecialchars的过滤</li>
+</ul>
+</li>
+<li><p>其它的通用的补充性防御手段</p>
+<ul>
+<li>在输出html时，加上Content Security Policy的Http Header<br>（作用：可以防止页面被XSS攻击时，嵌入第三方的脚本文件等）<br>（缺陷：IE或低版本的浏览器可能不支持）</li>
+<li>在设置Cookie时，加上HttpOnly参数<br>（作用：可以防止页面被XSS攻击时，Cookie信息被盗取，可兼容至IE6）<br>（缺陷：网站本身的JS代码也无法操作Cookie，而且作用有限，只能保证Cookie的安全）</li>
+<li>在开发API时，检验请求的Referer参数<br>（作用：可以在一定程度上防止CSRF攻击）<br>（缺陷：IE或低版本的浏览器中，Referer参数可以被伪造）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>CSRF攻击：攻击者发现CSRF漏洞——构造代码——发送给受害人——受害人打开——受害人执行代码——完成攻击<br>  CSRF（Cross-site request forgery）跨站请求伪造，也被称为“One Click Attack”或者Session Riding，通常缩写为CSRF或者XSRF，是一种对网站的恶意利用。尽管听起来像跨站脚本（XSS），但它与XSS非常不同，XSS利用站点内的信任用户，而CSRF则通过伪装来自受信任用户的请求来利用受信任的网站。即攻击者盗用了你的身份，在你不知情的情况下，以你的名义发送恶意请求。</p>
+<ul>
+<li><p>攻击过程：盗用cookie（发自浏览器但非资源）</p>
+<ol>
+<li>用户通过浏览器正常登录某网站，在通过验证后，网站产生Cookie信息并返回给浏览器</li>
+<li>用户未退出该网站之前，在同一浏览器中，打开了具有攻击性的链接</li>
+<li>该链接让浏览器发送Get请求，由于用户已经登录，因此它将携带正确的cookie并以其权限发送请求，从而导致来自黑客请求恶意代码被执行</li>
+</ol>
+</li>
+<li><p>防范措施：</p>
+<ul>
+<li>添加csrf_token</li>
+<li>验证Refere(js无权动Referer)</li>
+<li>加验证码</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>SSRF<br>  服务器端请求伪造</p>
+</li>
+<li><p>DDOS（Distributed Denial of Service）：分布式拒绝服务</p>
+<ul>
+<li>资源消耗类攻击：Syn Flood（消耗连接）、攻击者广播数据包（源地址填写被攻击主机）、Ack Flood、UDP Flood 通过大量请求消耗正常的带宽和协议栈处理资源的能力</li>
+<li>服务消耗性攻击：让服务端始终处理高消耗型的业务的忙碌状态</li>
+<li>反射类攻击:以UDP协议为主，一般请求回应的流量远远大于请求本身流量的大小<br>  <img src="https://nos.netease.com/cloud-website-bucket/2018082317352349771e35-270f-4ba5-9a8b-e912696e0c7a.jpg" alt=""></li>
+</ul>
+</li>
+<li><p>ARP（地址解析协议）<br>  ARP协议通过IP地址来查找主机的物理地址（也就是MAC地址）</p>
+<ul>
+<li><p>ARP欺骗（ARP毒化）<br>  发送伪造的ARP报文，恶意修改网关或网络内其他主机的ARP表项，造成用户或网络的报文转发异常。攻击机开启流量转发，然后将流量引入攻击主机，从而可以对信息进行窃听、截取、修改等操作</p>
+<p>  解决办法：对以太报文头中的源、目的MAC地址和ARP报文数据区中的源、目的MAC地址进行一致性检查</p>
+</li>
+<li><p>ARP泛洪<br>  攻击者向设备发送大量目的IP地址无法解析的伪造ARP请求报文或免费报文，造成设备上的ARP表项溢出，无法缓存正常用户的ARP表项，从而影响正常的报文转发</p>
+<p>  解决办法：限制学习ARP表项的总数目；对ARP报文进行数量统计，在一定时间内，如果ARP报文数量超出了配置的阈值，超出部分的ARP报文将被忽略</p>
+</li>
+</ul>
+</li>
+<li><p>对称加密  </p>
+<ul>
+<li><p>DES：以64位为<strong>分组对数据加密</strong>，它的密钥长度是56位，加密解密用同一算法。DES加密算法是对密钥进行保密，而公开算法，包括加密和解密算法。<a href="https://www.bilibili.com/video/BV1QW411B7A4?from=search&amp;seid=15867592710489723385" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1QW411B7A4?from=search&amp;seid=15867592710489723385</a></p>
+<ul>
+<li>初始、终止置换（64）：按置换表进行</li>
+<li>扩展置换：32+32，其中一个32通过添位操作变为48位（8组，旧组第一位复制到前一个新组的最后一位，旧组最后一位复制到下一个新组的第一位）</li>
+<li>S盒压缩处理：分8组，首位为行，中间4位为列，找到对应压缩表的数<br><img src="https://s1.ax1x.com/2020/05/05/YkJpQK.md.png" alt=""></li>
+</ul>
+</li>
+<li><p>AES128、192、256（密钥长度）：处理单位是字节，分组大小为128位。<a href="https://blog.csdn.net/qq_28205153/article/details/55798628" target="_blank" rel="noopener">https://blog.csdn.net/qq_28205153/article/details/55798628</a></p>
+<ul>
+<li>前9轮：字节代换、行位移、列混合和轮密钥加</li>
+<li>第10轮：字节代换、行位移和轮密钥加</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>非对称加密<br>  RSA 密钥分发 RSA是第一个能同时用于加密和数宇签名的算法<br>  详细描述秘钥生成过程<br>  <img src="https://s1.ax1x.com/2020/05/05/YkeGJe.md.png" alt=""></p>
+</li>
+<li><p>hash算法：</p>
+<ul>
+<li>sha1：数据加密算法/信息摘要算法    160bit散列值</li>
+<li>MD5：信息摘要算法    128bit散列值</li>
+</ul>
+</li>
+<li><p>base64</p>
+<ul>
+<li>数据切分：3个字节一组（24bit）</li>
+<li>数据重组：重组为4组</li>
+<li>处理：每组前加00</li>
+<li>编码：根据base64编码表获取相应的编码值</li>
+</ul>
+</li>
+<li><p>RSA加密算法如何生成一个大质数</p>
+</li>
+<li><p>加密、解密：A、B之间相互传东西，A拥有A的私钥、B的公钥；B拥有B的私钥、A的公钥。这样当A给B传信息的时候，用B的公钥加密，这样只有B才能解密</p>
+</li>
+<li><p>签名、验签：私钥签名，收到后与公钥对比（为了证明是我发的）</p>
+</li>
+<li><p>先签名再加密</p>
+</li>
+<li><p>ESP定律：堆栈平衡定律</p>
+</li>
+<li><p>汇编中函数调用的基本过程</p>
+</li>
+<li><p>硬件断点和软件断点：</p>
+<ul>
+<li><p>硬件断点：可在内存和堆栈上也可下断点，DR0-7调试寄存器有关，最多设置四个，不会将指令首字节修改为CC，所以更难检测</p>
+</li>
+<li><p>软件断点：只能在代码段，当我们在IDA中对代码的某一行设置断点时，即：F2，调试器会先把这里的本来指令的第一个字节保存起来，然后写入一条INT 3指令，因为INT 3指令的机器码为11001100b（0xCC）当运行到这的时候CPU会捕获一条异常，转去处理异常，CPU会保留上下文环境，然后中断到调试器，大多数调试器的做法是在被调试程序中断到调试器时，会先将所有断点位置被替换为INT 3的指令恢复成原来的指令，然后再把控制权交给用户，我们就可以进行调试了。<br>  <img src="https://img-blog.csdn.net/20161005205539869?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p>
+</li>
+</ul>
+</li>
+<li><p>X86/ARM的跳转指令及对寄存器的影响</p>
+</li>
+<li><p>逆向分析的基本步骤</p>
+</li>
+<li><p>如何检测app是否存在漏洞</p>
+</li>
+<li><p>加壳的方式</p>
+</li>
+<li><p>基本的反调试方法</p>
+</li>
+<li><p>so加固的实现方式</p>
+</li>
+<li><p>反射机制：JAVA反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意方法和属性；这种动态获取信息以及动态调用对象方法的功能称为java语言的反射机制。</p>
+</li>
+<li><p>启动流程：通电-&gt;读取ROM，加载BIOS-&gt;选择启动的方式（硬盘、USB、光驱）-&gt;引导扇区-&gt;启动管理器（Boot Loader）-&gt;选择操作系统-&gt;加载内核-&gt;产生init进程-&gt;fork出其他的子线程-&gt;启动完成</p>
+</li>
+<li><p>Android启动流程：<br>  Bootloader-&gt;Linux Kernel-&gt;init（根进程，PID=1）-&gt;Zygote（运行app_process）-&gt;ZygoteInit（类加载器加载Android启动依赖的类（四大组件、UI类等）、fock自身来创建子进程（应用进程和SystemServer进程））-&gt;启动AMS（ActivityManagerService）-&gt;打开Android系统的第一个Activity、启动home界面-&gt;Android系统启动完成</p>
+</li>
+<li><p>Android的通信方式：</p>
+<ul>
+<li>进程间IPC机制（Inter-Process Communication）：Binder </li>
+<li>线程间IPC机制：Handler</li>
+<li>ZygoteIPC机制：Socket</li>
+</ul>
+</li>
+<li><p>App启动流程：</p>
+<ul>
+<li><p>创建进程</p>
+<ul>
+<li><p>App发起进程：当从桌面启动应用，则发起进程便是Launcher所在进程；当从某App内启动远程进程，则发送进程便是该App所在进程。发起进程先通过binder发送消息给system_server进程</p>
+</li>
+<li><p>system_server进程：调用Process.start()方法，通过socket向zygote进程发送创建新进程的请求</p>
+</li>
+<li><p>zygote进程：在执行ZygoteInit.main()后便进入runSelectLoop()循环体内，当有客户端连接时便会执行ZygoteConnection.runOnce()方法，再经过层层调用后fork出新的应用进程</p>
+</li>
+<li><p>新进程：执行handleChildProc方法，最后调用ActivityThread.main()方法 </p>
+</li>
+</ul>
+</li>
+<li><p>绑定Application</p>
+<ul>
+<li><p>上面创建进程后，执行ActivityThread.main()方法，随后调用attach()方法</p>
+</li>
+<li><p>将进程和指定的Application绑定起来。这个是通过上节的ActivityThread对象中调用bindApplication()方法完成的。该方法发送一个BIND_APPLICATION的消息到消息队列中, 最终通过handleBindApplication()方法处理该消息. 然后调用makeApplication()方法来加载App的classes到内存中</p>
+</li>
+</ul>
+</li>
+<li><p>显示Activity界面</p>
+<ul>
+<li><p>realStartActivity()调用application线程对象中的scheduleLaunchActivity()发送一个LAUNCH_ACTIVITY消息到消息队列中, 通过 handleLaunchActivity()来处理该消息</p>
+</li>
+<li><p>在 handleLaunchActivity()通过performLaunchActiivty()方法回调Activity的onCreate()方法和onStart()方法，然后通过handleResumeActivity()方法，回调Activity的onResume()方法，最终显示Activity界面</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>加固：</p>
+</li>
+<li><p>对程序的dex和so进行保护</p>
+</li>
+<li><p>dex保护的方式：dex加密、指令抽取    答了个混淆，答了个抽取指令加密</p>
+</li>
+<li><p>so加密方法： section加密和函数加密</p>
+</li>
+<li><p>IDA如何调试和修复加固的so文件</p>
+</li>
+<li><p>elf壳： 说了一下手脱360和爱加密经历</p>
+</li>
+<li><p>资源加密方法： 不会</p>
+</li>
+<li><p>ARM32位和16位的thumb指令如何切换</p>
+</li>
+<li><p>IDA Pro的快捷键</p>
+</li>
+<li><p>apktool源码看过吗？讲讲</p>
+</li>
+<li><p>android反调试技巧有什么，讲到ptrace</p>
+</li>
+<li><p>ptrace工作原理，ptrace注入</p>
+</li>
+<li><p>Android下的安全机制：</p>
+</li>
+<li><p>android下的inline hook 及 got表hook</p>
+</li>
+<li><p>android下dalvik虚拟机和art虚拟机区别，讲到了oat，追问oat结构</p>
+</li>
+<li><p>开放问题：怎么搞不考虑技术才能更加安全，回答了一个直接重写libart / libdvm</p>
+</li>
+<li><p>描述一下android app从启动到运行总共经历过哪些步骤</p>
+</li>
+<li><p>描述一下android activity管理和service管理</p>
+</li>
+<li><p>DexLoader 描述一下，问了一下热加载所产生的安全问题有什么</p>
+</li>
+<li><p>混淆：Proguard、LLVM 代码混淆，花指令 用无意义的短变量去重命名类、变量、方法</p>
+</li>
+<li><p>LLVM</p>
+</li>
+<li><p>延迟绑定</p>
+</li>
+</ul>
+<h3 id="杂"><a href="#杂" class="headerlink" title="杂"></a>杂</h3><ul>
+<li><p>java和Python的区别</p>
+</li>
+<li><p>封装、继承、多态</p>
+<ul>
+<li><p>封装：就是把一些属性和方法封装到一个类里。提高数据的安全性、操作简单、隐藏了实现</p>
+</li>
+<li><p>继承：就如子类继承父类的一些属性和方法。</p>
+</li>
+<li><p>多态：就如一个父类有多个不同特色的子类。</p>
+<ul>
+<li>覆盖：子类继承了父类，但重写了父类的方法，因此虽然是从父类中拿到的方法但重写之后与父类方法有了区别，因此称为覆盖（即子类方法覆盖了父类方法）</li>
+<li>重载：多个print方法，但参数不同，因此可以运行，这也就是重载的含义，一个类中可以有多个同名不同参（参数列表不同）的方法。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>面向对象：多个类完成</p>
+</li>
+<li><p>异常处理机制：抛出异常和捕捉异常进行处理</p>
+</li>
+<li><p>虚函数和纯虚函数：</p>
+<ul>
+<li>虚函数：在大多数情形下都应该由子类提供个性化实现，但基类也可以提供缺省备选方案的时候</li>
+<li>纯虚函数：virtual void func()=0，当基类中的某个成员方法，必须由子类提供个性化实现的时候，应该设计为纯虚函数</li>
+</ul>
+</li>
+<li><p>构造函数和析构函数：</p>
+<ul>
+<li>类的构造函数是类的一种特殊的成员函数，它会在每次创建类的新对象时执行。构造函数的名称与类的名称是完全相同的，并且不会返回任何类型，也不会返回 void。构造函数可用于为某些成员变量设置初始值。</li>
+<li>类的析构函数是类的一种特殊的成员函数，它会在每次删除所创建的对象时执行。析构函数的名称与类的名称是完全相同的，只是在前面加了个波浪号（~）作为前缀，它不会返回任何值，也不能带有任何参数。析构函数有助于在跳出程序（比如关闭文件、释放内存等）前释放资源。</li>
+</ul>
+</li>
+<li><p>特征值 特征向量有什么用</p>
+</li>
+<li><p>内存泄漏：未释放导致之后不可达</p>
+</li>
+<li><p>线性代数：图的连通性，斐波那契，图形变换（人脸识别）</p>
+</li>
+</ul>
+<h3 id="项目准备"><a href="#项目准备" class="headerlink" title="项目准备"></a>项目准备</h3><ul>
+<li><p>Android逆向两个</p>
+</li>
+<li><p>windows逆向：sublime、winrar</p>
+</li>
+<li><p>毕设+机器学习</p>
+</li>
+</ul>
+<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><ul>
+<li><p>笛卡尔积：交叉相乘，类似于握手</p>
+</li>
+<li><p>选择：6name=aaa(Student) 行</p>
+</li>
+<li><p>投影：Πname(Student) 列</p>
+</li>
+<li><p>自然连接：∞ 两个表的相同部分进行结合，不相交的就会产生悬浮元组</p>
+</li>
+<li><p>外连接：两边的悬浮元组都保留</p>
+</li>
+<li><p>左/右连接：左/右的悬浮元组保留  LEFT OUTER JOIN</p>
+</li>
+<li><p>除法：被除数中包含所有除数则保留</p>
+</li>
+<li><p>CASCADE表示级联，把模式下的表和视图全部删除；RESTRICT表示限制，如果模式下有表和视图，则停止执行该语句</p>
+</li>
+<li><p>聚合函数 + GROUP BY + having</p>
+</li>
+<li><p>授权grant  with grant option授权再授权的权力</p>
+</li>
+<li><p>回首revoke  再授权的回收用级联cascade</p>
+</li>
+<li><p>角色，一类相同权限的人</p>
+</li>
+<li><p>视图机制：为不同的用户定义不同的视图，把不需要的数据给隐藏起来，这样用户就不会进行误操作</p>
+</li>
+<li><p>基础语法</p>
+<ul>
+<li><p><code>create DATABASE RUNOOB;</code>：创建数据库 </p>
+</li>
+<li><p><code>drop database RUNOOB;</code> ：删除数据库</p>
+</li>
+<li><p><code>use RUNOOB;</code>：选择数据库</p>
+</li>
+<li><p><code>CREATE TABLE table_name (column_name column_type)ENGINE=InnoDB DEFAULT CHARSET=utf8;</code>：创建数据表</p>
+</li>
+<li><p><code>DROP TABLE table_name ;</code>：删除数据表</p>
+</li>
+<li><p>ALTER：修改数据库/表</p>
+</li>
+<li><p><code>INSERT INTO table_name ( field1, field2,...fieldN ) VALUES ( value1, value2,...valueN );</code>：插入数据</p>
+</li>
+<li><p><code>SELECT column_name,column_name FROM table_name [WHERE Clause];</code>：查询数据</p>
+</li>
+<li><p><code>UPDATE table_name SET field1=new-value1, field2=new-value2 [WHERE Clause];</code>：更新数据</p>
+</li>
+<li><p><code>DELETE FROM table_name [WHERE Clause];</code>：删除数据</p>
+</li>
+</ul>
+</li>
+<li><p>数据库完整性</p>
+<ul>
+<li><p><strong>正确性</strong>：符合现实世界语义</p>
+</li>
+<li><p><strong>相容性</strong>：同-对象在不同表中的数据符合逻辑的</p>
+<p>为维护完整性，需要实现如下功能<br>1、提供定义完整性约束条件的机制<br>2、提供完整性检查的方法<br>3、进行违约处理</p>
+</li>
+<li><p>三大完整性</p>
+<ul>
+<li>实体完整性<br>主码唯一且非空</li>
+<li>参照完整性<br>外码要么为空，要么对应另外一张表的主码</li>
+<li>用户定义完整性<br>属性上约束条件的定义<br>  1、非空NOT NULL<br>  2、列值唯一UNIQUE<br>  3、满足某一条件表达式  check、断言、触发器</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>范式的作用：解决数据冗余、更新异常、插入异常、删除异常</p>
+</li>
+<li><p>范式：通过分解关系模式来消除其中不合适的数据依赖，以解决插入异常、删除异常、更新异常和数据冗余问题<br>  1NF，2NF，3NF，BCNF，4NF，5NF</p>
+<ul>
+<li>什么是第一范式、第二范式、第三范式？<br>关系模式R中每个属性都不可再分<br>关系模式R属于第一范式、且所有非主属性与主码之间是完全函数依赖<br>关系模式R属于第二范式，且所以非主属性与主码之间不存在传递函数依赖的关系<br>BCNF：不存在主属性对码的部分（a-&gt;b  a,c-&gt;b多此一举）和传递函数依赖</li>
+</ul>
+</li>
+<li><p>候选码：这样一个集合，他可以推出所有的属性，但是他的任意一个真子集无法推出所有属性</p>
+</li>
+<li><p>最小函数依赖：A-&gt;B B-&gt;C C-&gt;A</p>
+</li>
+<li><p>知识点</p>
+<ul>
+<li><p><strong>LIKE</strong>：LIKE 子句中使用百分号 %字符来表示任意字符，类似于UNIX或正则表达式中的星号 *</p>
+<p>  <a href="https://www.runoob.com/mysql/mysql-tutorial.html" target="_blank" rel="noopener">菜鸟教程</a>上的例子：<br>  <code>SELECT * from runoob_tbl  WHERE runoob_author LIKE &#39;%COM&#39;;</code></p>
+</li>
+<li><p><strong>UNION</strong>：UNION 操作符用于连接两个以上的 SELECT 语句的结果组合到一个结果集合中。多个 SELECT 语句会删除重复的数据</p>
+</li>
+<li><p><strong>排序</strong>： ORDER BY 子句来设定你想按哪个字段哪种方式来进行排序，再返回搜索结果</p>
+<p>  用法：<code>ORDER BY xxx ASC/DESC;</code></p>
+</li>
+<li><p><strong>分组</strong>：GROUP BY 语句根据一个或多个列对结果集进行分组，在分组的列上我们可以使用 COUNT, SUM, AVG,等函数</p>
+<p>  用法：<code>SELECT column_name, COUNT(*) FROM   table_name GROUP BY column_name;</code></p>
+</li>
+<li><p><strong>连接</strong>：</p>
+<ul>
+<li>INNER JOIN（内连接,或等值连接）：获取两个表中字段匹配关系的记录</li>
+<li>LEFT JOIN（左连接）：获取左表所有记录，即使右表没有对应匹配的记录</li>
+<li>RIGHT JOIN（右连接： 获取右表所有记录，即使左表没有对应匹配的记录</li>
+</ul>
+</li>
+<li><p><strong>事务</strong><br>事务是指一个单元的工作，这些工作要么全做，要么全部不做，事务机制保证一-组数据的修改要么全部执行，要么全部不执行<br>事务的四大特性</p>
+<ul>
+<li><p>原子性（Automaticity）：不可分割的操作单元，事务中所有操作，要么全部成功；要么撤回到执行事务之前的状态</p>
+</li>
+<li><p>一致性（Consistency）：如果在执行事务之前数据库是一致的，那么在执行事务之后数据库也还是一致的</p>
+</li>
+<li><p>隔离性（Isolation）：事务操作之间彼此独立和透明互不影响。事务独立运行。这通常使用锁来实现。一个事务处理后的结果，影响了其他事务，那么其他事务会撤回。事务的100%隔离，需要牺牲速度</p>
+</li>
+<li><p>持久性（Durability）：事务一旦提交，其结果就是永久的。即便发生系统故障，也能恢复</p>
+<p>事务处理：</p>
+</li>
+<li><p>BEGIN：开始一个事务</p>
+</li>
+<li><p>COMMIT：事务确认</p>
+</li>
+<li><p>ROLLBACK：事务回滚</p>
+</li>
+</ul>
+</li>
+<li><p><strong>索引</strong><br>索引是对数据库表中一或多个列的值进行排序的结构，是帮助MySQL高效获取数据的数据结构。索引也是一张表，该表保存了主键与索引字段，并指向实体表的记录。虽然建立索引会大大提高检索速度，但会占用空间以及降低更新表的速度</p>
+</li>
+<li><p><strong>MYISAM 和 InnoDB（默认引擎） 存储引擎</strong></p>
+<ul>
+<li><p>InnoDB支持事务、外键，MYISAM不支持</p>
+</li>
+<li><p>InnoDB 跨平台可直接拷贝使用，MYISAM 不行</p>
+</li>
+<li><p>DELETE 表时，InnoDB 是一行一行的删除，MYISAM 是先drop表，然后重建表</p>
+</li>
+<li><p>MYISAM提供高速存储和检索，以及全文搜索能力，适合读多，写少；相反InnoDB 适合读少，写多</p>
+</li>
+<li><p>MYISAM支持表锁，InnoDB支持表锁和行锁，默认为行锁</p>
+</li>
+</ul>
+</li>
+<li><p><strong>脏读、不可重读和幻读</strong></p>
+<ul>
+<li>脏读：事务A读取了事务B更新的数据，然后B回滚操作，那么A读取到的数据是脏数据</li>
+<li>不可重复读：事务 A 多次读取同一数据，事务 B 在事务A多次读取的过程中，对数据作了更新并提交，导致事务A多次读取同一数据时，结果 不一致。</li>
+<li>幻读：系统管理员A将数据库中所有学生的成绩从具体分数改为ABCDE等级，但是系统管理员B就在这个时候插入了一条具体分数的记录，当系统管理员A改结束后发现还有一条记录没有改过来，就好像发生了幻觉一样，这就叫幻读。</li>
+</ul>
+</li>
+<li><p>事务有4 个隔离级别，分别是：<br>  读未提交(read uncommit)<br>  读已提交(read commit)<br>  可重复读(repeatable read)<br>  串行读(serializable)。<br>  隔离级别依次提高，分别解决了脏读、不可重读和幻读。MySQL数据库(InnoDB引擎)默认使用可重复读（ Repeatable read)。</p>
+</li>
+</ul>
+</li>
+<li><p>视图：虚拟表  WITH CHECK OPTION 在执行时会检查条件是否含有不属于视图范围的操作  视图之上可以继续定义视图<br>  本身并不包含任何数据，它只包含映射到基表的一个查询语句，当基表数据发生变化，视图数据也随之变化<br>  如果需要经常执行某项复杂查询，可以基于这个复杂查询建立视图，此后查询此视图即可，简化复杂查询</p>
+</li>
+<li><p>存储过程是什么？有什么用？有什么优点？ <br>  就是一堆sql的集合，可以建立非常复杂的查询，编译运行，所以运行一次后，以后再运行速度比单独执行SQL快很多</p>
+</li>
+<li><p>索引的类型</p>
+<ul>
+<li>从数据结构角度：B+树索引、hash索引、全文索引、R-Tree索引</li>
+<li>从物理存储角度：聚集索引、非聚集索引</li>
+<li>从逻辑角度：主键索引、普通索引或者单列索引、多列索引（复合索引）、唯一索引或者非唯一索引、空间索引</li>
+</ul>
+</li>
+<li><p>什么是聚集索引或非聚集索引</p>
+<ul>
+<li>聚集索引和非聚集索引的根本区别是表记录的排列顺序和与索引的排列顺序是否一致，聚集索引表记录的排列顺序与索引的排列顺序一致，优点是查询速度快，因为一旦具有第一个索引值的纪录被找到，具有连续索引值的记录也一定物理的紧跟其后。</li>
+<li>聚集索引的缺点是对表进行修改速度较慢，这是为了保持表中的记录的物理顺序与索引的顺序一致，而把记录插入到数据页的相应位置，必须在数据页中进行数据重排，降低了执行速度。非聚集索引指定了表中记录的逻辑顺序，但记录的物理顺序和索引的顺序不一致，聚集索引和非聚集索引都采用了B+树的结构，但非聚集索引的叶子层并不与实际的</li>
+</ul>
+</li>
+<li><p>drop、delete与truncate的区别</p>
+<ul>
+<li>drop直接删掉表有关的一切（数据/结构/约束…），不会记录日志，为DDL(Data Definition Language,数据库定义语言)操作。</li>
+<li>truncate 删除表中所有数据（再插入时自增长id又从1开始），该操作也不会记录日志所以比较快，为DDL操作。只能删table。</li>
+<li>DELETE语句执行删除的过程是每次从表中删除一行，需要记录日志，比较慢，可以加where 语句，为DML（Data Manipulation Language, 数据操纵语言）。可以删table 和view 。</li>
+<li>速度上drop &gt; truncate &gt; delete</li>
+</ul>
+</li>
+<li><p>什么是数据库系统？<br>在计算机系统中引入数据库后的系统。它是由数据库、数据库用户、计算机软硬件、数据库管理员。</p>
+</li>
+<li><p>什么是数据库？<br>数据库是长期存在计算机内、有组织的、可共享数据集合。</p>
+</li>
+<li><p>什么是数据库系统的三级模式？<br>模式（逻辑模式或概念模式）、外模式（子模式或用户模式）、内模式（存储模式或物理模式）</p>
+</li>
+<li><p>什么是数据库系统的二级映像与数据独立性？<br>外模式/模式（逻辑独立性）、模式/内模式（物理独立性）</p>
+</li>
+<li><p>什么是数据库管理系统？<br>用于用户与操作系统之间的一层数据管理软件</p>
+</li>
+<li><p>什么是数据库管理系统的功能？<br>数据定义功能（DDL）、数据操纵功能（DML）、数据查询功能、数据控制功能</p>
+</li>
+<li><p>什么是数据模型的组成要素？<br>数据结构、数据操作、数据的完整性约束</p>
+</li>
+<li><p>什么是四种数据模型？<br>层次模型、网状模型、关系模型、面向对象模型</p>
+</li>
+<li><p>什么是数据库的约束？<br>NULL/NOT NULL约束、UNIQUE约束、PRIMARY KEY约束、FOREIGN KEY约束、CHECK约束</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%80%83%E7%A0%94/" rel="tag"># 考研</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/19/Vue-ElementUI%E5%AD%A6%E4%B9%A0/" rel="prev" title="Vue+ElementUI学习">
+      <i class="fa fa-chevron-left"></i> Vue+ElementUI学习
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/21/vue%E5%92%8Cflask%E7%9A%84%E5%89%8D%E5%90%8E%E7%AB%AF%E9%80%9A%E4%BF%A1/" rel="next" title="vue和flask的前后端通信">
+      vue和flask的前后端通信 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构"><span class="nav-number">1.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计算机组成原理"><span class="nav-number">2.</span> <span class="nav-text">计算机组成原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作系统"><span class="nav-number">3.</span> <span class="nav-text">操作系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计算机网络"><span class="nav-number">4.</span> <span class="nav-text">计算机网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络安全与密码学与Android"><span class="nav-number">5.</span> <span class="nav-text">网络安全与密码学与Android</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#杂"><span class="nav-number">6.</span> <span class="nav-text">杂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#项目准备"><span class="nav-number">7.</span> <span class="nav-text">项目准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库"><span class="nav-number">8.</span> <span class="nav-text">数据库</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lunter"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Lunter</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lulu</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
