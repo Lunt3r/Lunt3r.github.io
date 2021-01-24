@@ -20,28 +20,35 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Lunter&#39;s blog">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="概述Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。 Android开发环境的安装安装JDK、NDK、SDK，，并配置好环境变量。 模拟器的选择可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用android_x86_server。 adb的常见命令 a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android逆向基础">
+<meta property="og:url" content="http://yoursite.com/2020/02/28/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="Lunter&#39;s blog">
+<meta property="og:description" content="概述Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。 Android开发环境的安装安装JDK、NDK、SDK，，并配置好环境变量。 模拟器的选择可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用android_x86_server。 adb的常见命令 a">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2020/03/31/GlZvM8.png">
+<meta property="article:published_time" content="2020-02-28T02:31:12.000Z">
+<meta property="article:modified_time" content="2020-11-05T09:04:06.917Z">
 <meta property="article:author" content="Lunter">
+<meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2020/03/31/GlZvM8.png">
 
-<link rel="canonical" href="http://yoursite.com/">
+<link rel="canonical" href="http://yoursite.com/2020/02/28/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Lunter's blog</title>
+  <title>Android逆向基础 | Lunter's blog</title>
   
 
 
@@ -149,273 +156,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/23/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/01/23/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-23 20:44:12" itemprop="dateCreated datePublished" datetime="2021-01-23T20:44:12+08:00">2021-01-23</time>
-            </span>
-
-          
-
-        </div>
-      </header>
 
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/19/Android-Studio%E5%AE%9E%E7%8E%B0JNI/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/19/Android-Studio%E5%AE%9E%E7%8E%B0JNI/" class="post-title-link" itemprop="url">Android Studio实现JNI</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-19 00:20:15" itemprop="dateCreated datePublished" datetime="2020-03-19T00:20:15+08:00">2020-03-19</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>JNI即Java Native Interface (Java本地接口)，用来实现java代码调用C／C++代码<br>先前跟着吾爱一大哥的<a href="https://www.52pojie.cn/thread-706568-1-1.html" target="_blank" rel="noopener">帖子</a>做了一遍没有成功，应该是他的版本过于老旧，于是自己进行尝试。</p>
-<h3 id="安装LLDB和CMake"><a href="#安装LLDB和CMake" class="headerlink" title="安装LLDB和CMake"></a>安装LLDB和CMake</h3><p>在Android Studio的<code>File-&gt;Settings-&gt;System Settings-&gt;Android SDK-&gt;SDK Tools</code>中选中LLDB和CMake进行安装</p>
-<h3 id="进行编写"><a href="#进行编写" class="headerlink" title="进行编写"></a>进行编写</h3><ol>
-<li><p>创建新的Project<br> 在选择<strong>Template</strong>时选<strong>Native C++</strong></p>
-</li>
-<li><p>看见报错提示<strong>Caused by: org.gradle.api.InvalidUserDataException: NDK not configured…</strong><br> 这是因为未选定<strong>NDK</strong>路径，于是进入<code>File-&gt;Project Structure-&gt;SDK Location</code>中选择自己的<strong>NDK</strong>安装文件夹<br> 点击OK之后会发现底部框框出现<strong>CONFIGURE SUCCESSFUL</strong>字样，此时NDK配置完成</p>
-</li>
-<li><p>新建一个类，声明native方法。这个类是java与C/C++交互的中介，方法由java声明，由C/C++实现。</p>
-<p> <img src="https://s1.ax1x.com/2020/04/19/JupqMD.md.png" alt=""></p>
-<p> <img src="https://s1.ax1x.com/2020/04/19/Ju9lyF.png" alt=""></p>
-</li>
-<li><p>使用javac编译上述文件，生成class文件<br> 打开下方的<strong>Terminal</strong>即可进行编译，语句：<code>javac E:\...\myJNI.java</code>，之后便会多出个<strong>myJNI.class</strong>文件</p>
-</li>
-<li><p>进入<strong>java</strong>文件夹目录，并在里面执行<code>javah -jni 包名.类名</code>，然后会多出个<strong>包名_类名.h</strong><br> <img src="https://s1.ax1x.com/2020/04/20/Jlmli6.png" alt=""></p>
-</li>
-<li><p>将之前生成的<strong>.h</strong>文件移入<strong>cpp</strong>文件夹中，然后在其中创建一个新的<strong>.c或.cpp</strong>文件。将<strong>.h</strong>文件中的内容复制进入并作修改，如下：<br> <img src="https://s1.ax1x.com/2020/04/20/JlUcXn.png" alt=""></p>
-<p> 此时文件上方也许 会有报错提示，不用理会</p>
-</li>
-<li><p>配置<strong>build.gradle</strong>文件，如下图：<br> <img src="https://s1.ax1x.com/2020/04/20/J1SfQx.png" alt=""></p>
-</li>
-</ol>
-<ol start="8">
-<li><p>修改<strong>CMakeList.txt</strong>文件，如下图：</p>
-<p> <img src="https://s1.ax1x.com/2020/04/20/JlXpTA.png" alt=""></p>
-</li>
-<li><p>生成SO库<br> 点击<code>Build-&gt;Rebuild Project</code>即可，生成的各版本的so都在<code>app-&gt;build-&gt;intermediates-&gt;cmake-&gt;debug-&gt;obj</code>文件夹中</p>
-</li>
-</ol>
-<h3 id="调用SO"><a href="#调用SO" class="headerlink" title="调用SO"></a>调用SO</h3><ol>
-<li><p>新建<strong>jniLibs</strong>文件夹，将生成的<strong>so</strong>拷入</p>
-</li>
-<li><p>打开MainActivity.java插入一条log来调用so中的sayHello方法（如下图），并连接手机调试<br> <img src="https://s1.ax1x.com/2020/04/20/J19cx1.png" alt=""></p>
-<p> 运行出现<code>More than one file was found with OS independent path &#39;lib/x86/libJniTest.so&#39;</code>报错，原来是因为把各版本的<strong>so</strong>都拷入的原因，删掉其他三个，运行成功</p>
-<p> 若出现<code>More than one file was found with OS independent path &#39;lib/armeabi-v7a/libnms.so&#39;</code>报错，可在<code>app-&gt;build.gradle</code>中添加</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F; Fix: More than one file was found</span><br><span class="line">    packagingOptions &#123;</span><br><span class="line">        pickFirst &#39;lib&#x2F;armeabi-v7a&#x2F;libnms.so&#39;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h3 id="关于so版本选择"><a href="#关于so版本选择" class="headerlink" title="关于so版本选择"></a>关于so版本选择</h3><p>armeabiv-v7a: 第7代及以上的 ARM 处理器。2011年15月以后的生产的大部分Android设备都使用它<br>arm64-v8a: 第8代、64位ARM处理器，很少设备，三星 Galaxy S6是其中之一<br>armeabi: 第5代、第6代的ARM处理器，早期的手机用的比较多<br>x86: 平板、模拟器用得比较多<br>x86_64: 64位的平板</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/28/Android%E5%B7%A5%E5%85%B7%E5%90%88%E9%9B%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/02/28/Android%E5%B7%A5%E5%85%B7%E5%90%88%E9%9B%86/" class="post-title-link" itemprop="url">Android工具合集</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-02-28 11:39:22" itemprop="dateCreated datePublished" datetime="2020-02-28T11:39:22+08:00">2020-02-28</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="apktool"><a href="#apktool" class="headerlink" title="apktool"></a>apktool</h3><p>apktool主要用于逆向apk文件。</p>
-<ul>
-<li><p>安装：<code>https://ibotpeaches.github.io/Apktool/install/</code></p>
-</li>
-<li><p>功能：</p>
-<ul>
-<li>反编译资源回原始资源（包括resources.arsc, classes.dex, 9.png. 和 XMLs）</li>
-<li>将解码的资源重新打包成APK/JAR</li>
-<li>组织和处理依赖于框架资源的APKs</li>
-<li>Smali调试</li>
-<li>帮助重复性执任务</li>
-</ul>
-</li>
-<li><p>使用：</p>
-<ul>
-<li>反编译：<code>apktool d xxx.apk</code></li>
-<li>重新打包：<code>apktool b xxx xxx.apk</code>(未签名)</li>
-</ul>
-</li>
-</ul>
-<h3 id="遇到的一些问题："><a href="#遇到的一些问题：" class="headerlink" title="遇到的一些问题："></a>遇到的一些问题：</h3><ul>
-<li>使用<code>AndroidKiller_v1.3.1</code>进行反编译时出现<strong>APK 反编译失败，无法继续下一步源码反编译!</strong>的提示<br>  解决办法：<br>  用Apktool中的<code>apktool.jar</code>替换<code>AndroidKiller-&gt;bin-&gt;apktool-&gt;apktool-&gt;ShakaApktool.jar</code>，并将名字改为与之相同。重新打开即可成功反编译。</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -431,10 +175,9 @@
       <meta itemprop="name" content="Lunter's blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/02/28/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">Android逆向基础</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Android逆向基础
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -466,7 +209,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。</p>
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。</p>
 <h3 id="Android开发环境的安装"><a href="#Android开发环境的安装" class="headerlink" title="Android开发环境的安装"></a>Android开发环境的安装</h3><p>安装JDK、NDK、SDK，，并配置好环境变量。</p>
 <h3 id="模拟器的选择"><a href="#模拟器的选择" class="headerlink" title="模拟器的选择"></a>模拟器的选择</h3><p>可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用<code>android_x86_server</code>。</p>
 <h3 id="adb的常见命令"><a href="#adb的常见命令" class="headerlink" title="adb的常见命令"></a>adb的常见命令</h3><ul>
@@ -897,21 +640,33 @@
 </li>
 </ul>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/28/Android%E5%B7%A5%E5%85%B7%E5%90%88%E9%9B%86/" rel="next" title="Android工具合集">
+      Android工具合集 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
@@ -964,6 +719,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android开发环境的安装"><span class="nav-number">2.</span> <span class="nav-text">Android开发环境的安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟器的选择"><span class="nav-number">3.</span> <span class="nav-text">模拟器的选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#adb的常见命令"><span class="nav-number">4.</span> <span class="nav-text">adb的常见命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Apk文件"><span class="nav-number">5.</span> <span class="nav-text">Apk文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dalvik"><span class="nav-number">6.</span> <span class="nav-text">Dalvik</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ART"><span class="nav-number">7.</span> <span class="nav-text">ART</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Smali"><span class="nav-number">8.</span> <span class="nav-text">Smali</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android启动流程"><span class="nav-number">9.</span> <span class="nav-text">Android启动流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dalvik指令集"><span class="nav-number">10.</span> <span class="nav-text">Dalvik指令集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题汇总"><span class="nav-number">11.</span> <span class="nav-text">问题汇总</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
