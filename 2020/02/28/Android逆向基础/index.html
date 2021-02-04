@@ -20,16 +20,16 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="概述Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。 Android开发环境的安装安装JDK、NDK、SDK，，并配置好环境变量。 模拟器的选择可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用android_x86_server。 adb的常见命令 a">
+  <meta name="description" content="概述Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。 Android开发环境的安装安装JDK、NDK、SDK，，并配置好环境变量。 模拟器的选择可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用android_x86_server。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android逆向基础">
 <meta property="og:url" content="http://yoursite.com/2020/02/28/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="Lunter&#39;s blog">
-<meta property="og:description" content="概述Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。 Android开发环境的安装安装JDK、NDK、SDK，，并配置好环境变量。 模拟器的选择可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用android_x86_server。 adb的常见命令 a">
+<meta property="og:description" content="概述Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。 Android开发环境的安装安装JDK、NDK、SDK，，并配置好环境变量。 模拟器的选择可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用android_x86_server。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://s1.ax1x.com/2020/03/31/GlZvM8.png">
 <meta property="article:published_time" content="2020-02-28T02:31:12.000Z">
-<meta property="article:modified_time" content="2020-11-05T09:04:06.917Z">
+<meta property="article:modified_time" content="2021-02-04T08:58:12.573Z">
 <meta property="article:author" content="Lunter">
 <meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
@@ -212,6 +212,8 @@
         <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。</p>
 <h3 id="Android开发环境的安装"><a href="#Android开发环境的安装" class="headerlink" title="Android开发环境的安装"></a>Android开发环境的安装</h3><p>安装JDK、NDK、SDK，，并配置好环境变量。</p>
 <h3 id="模拟器的选择"><a href="#模拟器的选择" class="headerlink" title="模拟器的选择"></a>模拟器的选择</h3><p>可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用<code>android_x86_server</code>。</p>
+<a id="more"></a>
+
 <h3 id="adb的常见命令"><a href="#adb的常见命令" class="headerlink" title="adb的常见命令"></a>adb的常见命令</h3><ul>
 <li><p><code>adb devices</code></p>
 </li>

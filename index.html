@@ -465,13 +465,14 @@
 <p>因此，当程序被设定为禁止调试时通过修改<code>android:debuggable=&quot;true&quot;</code>来进行反反调试就行不通了，此时只能进行修改<strong>boot.img</strong>等方法来进行反反调试了。</p>
 <h3 id="调试器端口检测"><a href="#调试器端口检测" class="headerlink" title="调试器端口检测"></a>调试器端口检测</h3><p>调试器远程调试时，会占用一些固定的端口号，如23946。因此可进行读取/proc/net/tcp进行查看，若发现23946端口正在被使用，则说明程序在被调试。</p>
 <p>可以在启动调试程序时修改端口，如使用命令<code>./android_server -p12345</code>以及<code>adb forward tcp:12345 tcp:12345</code>进行反反调试。</p>
-<h3 id="调试器进程名检测"><a href="#调试器进程名检测" class="headerlink" title="调试器进程名检测"></a>调试器进程名检测</h3><p>要远程调试则需要在手机中运行<strong>android_server</strong>、<strong>gdbserver</strong>等进程。因此可以通过读取<strong>ps</strong>进行遍历进程，查找固定的进程名，若能找到则说明程序在被调试。</p>
-<p>可以修改<strong>android_server</strong>、<strong>gdbserver</strong>等程序名称来进行反反调试。</p>
-<h3 id="Tracerpid检测"><a href="#Tracerpid检测" class="headerlink" title="Tracerpid检测"></a>Tracerpid检测</h3><p>当程序未被调试时，<code>/proc/pidxxx/status</code>中的Tracerpid字段会为<strong>0</strong>。若程序在被进行调试，则Tracerpid字段的值就会改变。因此可以对Tracerpid字段进行检测，从而判断程序是否被调试。</p>
-<h3 id="ptrace检测"><a href="#ptrace检测" class="headerlink" title="ptrace检测"></a>ptrace检测</h3><p>每个进程同时刻只能被1个调试进程ptrace。因此，当程序被调试器进行调试后，如果程序再对自己进行ptrace就会失败，从而知晓程序在被调试。亦或者直接进行ptrace自己，从而让调试器无法进行附加调试，而且此时Tracerpid字段肯定不为<strong>0</strong>。如果使用修改系统源码再重新编译的方法对<strong>Tracerpid检测</strong>反调试进行绕过，则此时Tracerpid字段会为0，从而知道源码被修改了。</p>
-<h3 id="断点检测"><a href="#断点检测" class="headerlink" title="断点检测"></a>断点检测</h3><p>调试器从下断点到执行断点的过程：<br>1 保存：保存目标处指令及数据<br>2 替换：目标处指令替换为断点指令<br>3 命中断点：命中断点指令(引发中断或者说发出SIGTRAP信号)<br>4 收到信号：调试器收到SIGTRAP信号后，执行调试器注册的信号处理函数。<br>5 恢复：调试器处理函数恢复保存的指令<br>6 回退：回退PC寄存器<br>7 回归：控制权回归原程序</p>
-<p>因此可对so中的在可执行segment进行遍历，查看是否出现ARM、Thumb以及Thumb2的<strong>断点指令</strong>即可判断程序是否被调试。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/22/%E5%8F%8D%E8%B0%83%E8%AF%95%E5%88%86%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -556,61 +557,15 @@
 </li>
 <li><p>pull出<code>/system/lib/libdvm.so</code>文件</p>
 </li>
-<li><p>将<code>libdvm.so</code>加载入ida并在<strong>dvmDexFileOpenPartial</strong>函数开始处下断点</p>
-</li>
-<li><p>attach进程<br>  点击<code>Debugger-&gt;Attach to process</code>，在选择框中选择apk对应的包名（即apk运行的进程名）并记录下<strong>ID</strong>，然后点击<strong>OK</strong></p>
-</li>
-<li><p>在PC的xxx（此处为ID）端口与手机的相应端口之间建立连接<br>  <code>adb forward tcp:8700 jdwp:xxx（此处为ID）</code></p>
-</li>
-<li><p>使用<strong>jdb</strong>在<strong>java</strong>层将apk attach到电脑上<br>  <code>jdb -connect com.sun.jdi.SocketAttach:hostname=localhost,port=8700</code></p>
-</li>
-<li><p><strong>F9</strong>运行ida，一路ok程序停在预先下好的断点处<br>  此时寄存器R0中对应的就是dex文件的起始地址，R1对应的就是dex文件的大小</p>
-</li>
-<li><p>使用IDC进行dump内存获取dex，脚本如下：</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static main(void)</span><br><span class="line">&#123;</span><br><span class="line">	auto fp, dex_addr, end_addr;</span><br><span class="line">	fp &#x3D; fopen(&quot;E:\\Android\\temp\\dump.dex&quot;, &quot;wb&quot;);</span><br><span class="line">	end_addr &#x3D; r0 + r1;</span><br><span class="line">	for(dex_addr &#x3D; r0; dex_addr &lt; end_addr; dex_addr++)</span><br><span class="line">		fputc(Byte(dex_addr), fp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>因为Dalvik虚拟机下对运行的dex文件做了优化，真正在内存中运行的是odex文件</p>
-<ul>
-<li>使用baksmali对odex文件进行反编译</li>
-<li>使用smali进行编译成dex文件</li>
 </ul>
-</li>
-<li><p>得到了dex文件即可对其进行分析了</p>
-</li>
-</ul>
-<h3 id="dump内存法二"><a href="#dump内存法二" class="headerlink" title="dump内存法二"></a>dump内存法二</h3><ul>
-<li><p>按动态调试流程进行</p>
-</li>
-<li><p>在获取到<strong>进程ID</strong>后打开<code>adb shell</code><br>  输入<code>cat /proc/xxx（进程ID）/maps</code>，在结果里找到对应程序的dex文件地址</p>
-</li>
-<li><p>在ida中使用IDC进行dump内存获取dex，脚本如下：</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static main(void)&#123;</span><br><span class="line">    auto fp, beg_addr, end_addr, dex_addr;	</span><br><span class="line">    fp &#x3D; fopen(&quot;E:\\Android\\atemp\\dump.dex&quot;, &quot;wb&quot;);	</span><br><span class="line">    beg_addr &#x3D; 0xaaaaaaaa;	</span><br><span class="line">    end_addr &#x3D; 0xbbbbbbbb;	</span><br><span class="line">    for (dex_addr &#x3D; beg_addr; dex_addr &lt; end_addr; dex_addr++ )	</span><br><span class="line">        fputc(Byte(dex_addr), fp);	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>但此法有问题，目前还没弄明白，有待研究，如下图：<br>  <img src="https://s1.ax1x.com/2020/04/28/J4hAp9.md.png" alt=""></p>
-<p>  圈中的是我用<strong>法一</strong>得到的，可以dump出来，但在此时进入<strong>法二</strong>的进程<strong>maps</strong>（图中横线）中却得不到真正的dex地址</p>
-</li>
-</ul>
-<h3 id="dump内存法三"><a href="#dump内存法三" class="headerlink" title="dump内存法三"></a>dump内存法三</h3><p>使用<strong>ZjDroid</strong>。ZjDroid是基于Xposed Framewrok的动态逆向分析模块，逆向分析者可以通过ZjDroid完成以下工作：</p>
-<ul>
-<li><p>DEX文件的内存dump</p>
-</li>
-<li><p>基于Dalvik关键指针的内存BackSmali，有效破解加固应用</p>
-</li>
-<li><p>敏感API的动态监控</p>
-</li>
-<li><p>指定内存区域数据dump</p>
-</li>
-<li><p>获取应用加载DEX信息。</p>
-</li>
-<li><p>获取指定DEX文件加载类信息。</p>
-</li>
-<li><p>dump Dalvik java堆信息。</p>
-</li>
-<li><p>在目标进程动态运行lua脚本。</p>
-</li>
-</ul>
-<h3 id="art虚拟机"><a href="#art虚拟机" class="headerlink" title="art虚拟机"></a>art虚拟机</h3><p>上述都是Dalvik虚拟机下的。对于art虚拟机下，dump的点在于libart.so的OpenMemory函数。而且dump出来的文件是OAT文件，OAT文件类似于Dalvik的ODEX文件。由于OAT文件中包含完整的DEX文件，取出OAT文件的方法非常简单：定位OAT文件中的<strong>DexFile</strong>结构体然后将数据完整导出即可。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/15/%E8%8E%B7%E5%8F%96dex%E4%B9%8Bdump%E5%86%85%E5%AD%98/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -691,52 +646,16 @@
 </li>
 </ul>
 <h3 id="调试so"><a href="#调试so" class="headerlink" title="调试so"></a>调试so</h3><ul>
-<li><p>安装好apk，并运行</p>
-</li>
-<li><p>启动调试服务并进行端口转发（与上相同）</p>
-</li>
-<li><p>使用工具对apk进行解包，获取到<strong>so文件</strong><br>  若要对libdvm.so或者libart.so等系统的so进行分析，则从<code>/system/lib/</code>文件夹中pull出</p>
-</li>
-<li><p>ida加载so文件，并下好断点（源码调试）</p>
-</li>
-<li><p>attach进程<br>  点击<code>Debugger-&gt;Attach to process</code>，在选择框中选择apk对应的包名（即apk运行的进程名）并记录下<strong>ID</strong></p>
-<p>  然后点击<strong>OK</strong>然后<strong>F9</strong>运行ida</p>
-</li>
+<li>安装好apk，并运行</li>
 </ul>
-<ul>
-<li><p>进入<code>Debug options</code>选中<code>Suspend on library load/unload</code></p>
-</li>
-<li><p>在PC的xxx（此处为ID）端口与手机的相应端口之间建立连接<br>  <code>adb forward tcp:8700 jdwp:xxx（此处为ID）</code>也可使用<strong>ddms</strong></p>
-<p>  通信过程如下图（图片来源ctfwiki）</p>
-<p>  <img src="https://s1.ax1x.com/2020/04/27/JfUoND.png" alt=""></p>
-</li>
-<li><p>使用<strong>jdb</strong>在<strong>java</strong>层将apk attach到电脑上，恢复运行<br>  <code>jdb -connect com.sun.jdi.SocketAttach:hostname=localhost,port=8700</code><br>  此时ida开始加载so</p>
-</li>
-<li><p>此时ida来到linker（Android系统的加载器/链接器，用于加载so文件）处<br>  进入<strong>module</strong>找到对应的so下好断点，<strong>F9</strong>运行ida来到断点处，即可进行调试</p>
-</li>
-</ul>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ul>
-<li><p>若想对无法在<strong>module</strong>中找到的函数进行动态调试该怎么办？</p>
-<ul>
-<li>再打开一个ida导入so进行静态分析，找到对应函数的相对地址（双开定位法）</li>
-<li>在动态调试的ida中找到so在内存中的基址</li>
-<li>跳转至基址和相对地址相加的位置，即为函数所在处</li>
-</ul>
-</li>
-<li><p>对于加壳或有反调试的文件进行动态调试不能直接打开apk然后attach<br>  应当以调试方式来启动程序，<code>adb shell am start -D -n packagename/.MainActivity</code></p>
-</li>
-<li><p>使用其他模拟器好像都不太行（架构的问题）<br>  建议使用真机或者使用SDK自带的模拟器</p>
-</li>
-<li><p>如何patch</p>
-<ul>
-<li><p>对于一般函数：找到调用函数处修改对应的HEX为<code>00 00 00 00</code>（也可为其他无意义指令），也可将函数的第二条（第一条为PUSH）改为<strong>POP</strong>指令</p>
-</li>
-<li><p>对于动态注册的函数：把调用exit退出对应的HEX改成<code>00 00 00 00</code></p>
-</li>
-</ul>
-</li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/27/ida%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -811,79 +730,14 @@
 <li>如果经过变异文件更新了覆盖范围，则将其保留添加到队列中</li>
 <li>上述过程会一直循环进行，期间触发了crash的文件会被记录下来</li>
 </ol>
-<h3 id="尝试AFL漏洞挖掘"><a href="#尝试AFL漏洞挖掘" class="headerlink" title="尝试AFL漏洞挖掘"></a>尝试AFL漏洞挖掘</h3><ol>
-<li><p>下载并安装</p>
-<ol>
-<li><code>https://lcamtuf.coredump.cx/afl/</code>下载</li>
-<li><code>make</code>以及<code>make install</code></li>
-</ol>
-</li>
-<li><p>在Fuzzing程序之前，我们需要对程序进行插桩：<code>afl-gcc -g -o afl_test test.c</code> </p>
-<p> <code>test.c</code>是我随便找的一个ctf的pwn题源码</p>
-<p> 插桩：在AFL编译文件时候afl-gcc会在规定位置插入桩代码，可以理解为一个个的小断点(但是没有暂停功能)，在后续fuzz的过程中会根据这些桩代码进行路径探索，测试等。使得测试覆盖面更广，更全面。</p>
-</li>
-<li><p>新建afl_in文件夹用于存放初始输入文件，新建afl_out文件夹用于保存Fuzzing测试结果</p>
-<p> 初始输入文件为<code>/afl-2.52b/testcases/others/text/hello_world.txt</code></p>
-</li>
-<li><p>进行测试：<code>afl-fuzz -i afl_in -o afl_out ./afl_test</code></p>
-</li>
-<li><p>认识AFL状态窗口</p>
-<p> <img src="https://images.seebug.org/content/images/2019/03/11/1552282159000-006tNbRwly1fxuut7d2jmj314c0osdni.jpg-w331s" alt=""></p>
-<p> ① Process timing:Fuzzer运行时长、以及距离最近发现的路径、崩溃和挂起经过了多长时间。</p>
-<p> ② Overall results：Fuzzer当前状态的概述。</p>
-<p> ③ Cycle progress：我们输入队列的距离。</p>
-<p> ④ Map coverage：目标二进制文件中的插桩代码所观察到覆盖范围的细节。</p>
-<p> ⑤ Stage progress：Fuzzer现在正在执行的文件变异策略、执行次数和执行速度。</p>
-<p> ⑥ Findings in depth：有关我们找到的执行路径，异常和挂起数量的信息。</p>
-<p> ⑦ Fuzzing strategy yields：关于突变策略产生的最新行为和结果的详细信息。</p>
-<p> ⑧ Path geometry：有关Fuzzer找到的执行路径的信息。</p>
-<p> ⑨ CPU load：CPU利用率</p>
-</li>
-<li><p>我的测试结果如下图：</p>
-<p> <img src="https://s1.ax1x.com/2020/03/27/GP88US.md.png" alt=""></p>
-</li>
-<li><p><code>afl_out</code>文件夹结果如下图：</p>
-<p> <img src="https://s1.ax1x.com/2020/03/27/GPGuiF.png" alt=""><br> <img src="https://s1.ax1x.com/2020/03/27/GPGBQA.png" alt=""></p>
-<ul>
-<li><p>crashes：导致目标接收致命signal而崩溃的独特测试用例。</p>
-</li>
-<li><p>crashes/README.txt：保存了目标执行这些crash文件的命令行参数。</p>
-</li>
-<li><p>hangs：导致目标超时的独特测试用例。</p>
-</li>
-<li><p>queue：存放所有具有独特执行路径的测试用例。</p>
-</li>
-<li><p>fuzzer_stats：afl-fuzz的运行状态。</p>
-</li>
-<li><p>plot_data：用于afl-plot绘图。</p>
-</li>
-</ul>
-</li>
-<li><p>可见跑出了很多的的crashes，接下来就是根据这些crashes来判断是否可以利用，以及如何利用。</p>
-</li>
-</ol>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>至此，我们已经按照网上的教程完成一套流程，但也仅仅只是，因为很多问题都没能弄清楚。深入的知识以后慢慢研究。</p>
-<p>这其中我遇到了很多问题：</p>
-<ul>
-<li><p><code>Pipe at the beginning of ‘core_pattern’</code>问题：</p>
-<p>  需要以root用户修改<code>/proc/sys/kernel/core_pattern</code>，但<code>sudo echo core &gt;/proc/sys/kernel/core_pattern</code>被<code>Permission denied</code>了。</p>
-<p>  百度才知道，是因为重定向符号 <code>&gt;</code> 也是 bash 的命令，sudo 只是让 <code>echo</code>命令具有了root 权限，但是没有让 <code>&gt;</code>命令也具有root 权限，所以 bash 会认为这个命令没有写入信息的权限。</p>
-<p>  于是可用<code>sudo sh -c &quot;echo core &gt;/proc/sys/kernel/core_pattern&quot;</code>进行修改。</p>
-</li>
-<li><p>测试停止问题</p>
-<p>  在启动测试后，我们会发现程序一直在跑，似乎没有停下来的想法，了解后才知道afl-fuzz永远不会停止。因为测试数据会不断产生然后输入测试，而程序不会主观的认为所有的crashes都已经被发现，于是会不停的跑下去。至于我们应该什么时候中止程序，以下是网上的几种判断方法：</p>
-<ul>
-<li>状态窗口中<strong>“cycles done”</strong>字段颜色变为绿色:紫色-&gt;黄色-&gt;蓝色-&gt;绿色</li>
-<li>距上一次发现新路径（或者崩溃）已经过去很长时间</li>
-<li>目标程序的代码几乎被测试用例完全覆盖    </li>
-</ul>
-</li>
-<li><p>看到<strong>将队列中的文件按一定的策略进行“突变”</strong>这一介绍时，我想起了之前人工智能课上老师所讲到的<code>遗传算法</code>的知识，两者是否有关联或者两者是否可以结合？</p>
-</li>
-</ul>
-<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://paper.seebug.org/841/" target="_blank" rel="noopener">AFL 漏洞挖掘技术漫谈（一）：用 AFL 开始你的第一次 Fuzzing</a></p>
-<p><a href="https://www.freebuf.com/column/197672.html" target="_blank" rel="noopener">AFL漏洞挖掘技术漫谈（二）：Fuzz结果分析和代码覆盖率</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/26/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -953,14 +807,14 @@
 <li><p>下载<strong>ESLint</strong>插件</p>
 </li>
 <li><p>进入<code>文件-&gt;首选项-&gt;设置-&gt;扩展-&gt;ESLint-&gt;在settings.json中编辑</code></p>
-</li>
-<li><p>将以下代码贴入其中</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F; vscode默认启用了根据文件类型自动设置tabsize的选项</span><br><span class="line">    &quot;editor.detectIndentation&quot;: false,</span><br><span class="line">    &#x2F;&#x2F; 重新设定tabsize</span><br><span class="line">    &quot;editor.tabSize&quot;: 2,</span><br><span class="line">    &#x2F;&#x2F; #每次保存的时候自动格式化 </span><br><span class="line">    &quot;editor.formatOnSave&quot;: true,</span><br><span class="line">    &#x2F;&#x2F; #每次保存的时候将代码按eslint格式进行修复</span><br><span class="line">    &quot;eslint.autoFixOnSave&quot;: true,</span><br><span class="line">    &#x2F;&#x2F; 添加 vue 支持</span><br><span class="line">    &quot;eslint.validate&quot;: [</span><br><span class="line">      &quot;javascript&quot;,</span><br><span class="line">      &quot;javascriptreact&quot;,</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;language&quot;: &quot;vue&quot;,</span><br><span class="line">        &quot;autoFix&quot;: true</span><br><span class="line">      &#125;</span><br><span class="line">    ],</span><br><span class="line">    &#x2F;&#x2F; #让prettier使用eslint的代码格式进行校验 </span><br><span class="line">    &quot;prettier.eslintIntegration&quot;: true,</span><br><span class="line">    &#x2F;&#x2F; #去掉代码结尾的分号 </span><br><span class="line">    &quot;prettier.semi&quot;: false,</span><br><span class="line">    &#x2F;&#x2F; #使用带引号替代双引号 </span><br><span class="line">    &quot;prettier.singleQuote&quot;: true,</span><br><span class="line">    &#x2F;&#x2F; #让函数(名)和后面的括号之间加个空格</span><br><span class="line">    &quot;javascript.format.insertSpaceBeforeFunctionParenthesis&quot;: true,</span><br><span class="line">    &#x2F;&#x2F; #这个按用户自身习惯选择 </span><br><span class="line">    &quot;vetur.format.defaultFormatter.html&quot;: &quot;js-beautify-html&quot;,</span><br><span class="line">    &#x2F;&#x2F; #让vue中的js按编辑器自带的ts格式进行格式化 </span><br><span class="line">    &quot;vetur.format.defaultFormatter.js&quot;: &quot;vscode-typescript&quot;,</span><br><span class="line">    &quot;vetur.format.defaultFormatterOptions&quot;: &#123;</span><br><span class="line">      &quot;js-beautify-html&quot;: &#123;</span><br><span class="line">        &quot;wrap_line_length&quot;: 120,</span><br><span class="line">        &quot;wrap_attributes&quot;: &quot;auto&quot;</span><br><span class="line">        &#x2F;&#x2F; #vue组件中html代码格式化样式</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F; 格式化stylus, 需安装Manta&#39;s Stylus Supremacy插件</span><br><span class="line">    &quot;stylusSupremacy.insertColons&quot;: false, &#x2F;&#x2F; 是否插入冒号</span><br><span class="line">    &quot;stylusSupremacy.insertSemicolons&quot;: false, &#x2F;&#x2F; 是否插入分号</span><br><span class="line">    &quot;stylusSupremacy.insertBraces&quot;: false, &#x2F;&#x2F; 是否插入大括号</span><br><span class="line">    &quot;stylusSupremacy.insertNewLineAroundImports&quot;: false, &#x2F;&#x2F; import之后是否换行</span><br><span class="line">    &quot;stylusSupremacy.insertNewLineAroundBlocks&quot;: false,</span><br><span class="line">    &quot;explorer.confirmDelete&quot;: false &#x2F;&#x2F; 两个选择器中是否换行</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>确认后，代码即可进行自动排版</p>
-</li>
-</ol>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/25/%E6%AF%95%E8%AE%BE%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

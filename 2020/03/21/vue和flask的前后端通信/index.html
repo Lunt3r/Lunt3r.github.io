@@ -28,7 +28,7 @@
 <meta property="og:description" content="由于项目是前后端分离的，前端用的vue-elemnet框架，后端用的是flask。而项目的最终是要将数据库中的数据通过flask读取然后传给前端进行展示，于是前后端之间的数据传输在所难免。询问朋友后决定使用axios进行数据的传输。 axios 安装npm install axiosnpm install --save axios vue-axios  在main.js中导入import axio">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-03-21T03:51:54.000Z">
-<meta property="article:modified_time" content="2020-11-09T12:47:04.537Z">
+<meta property="article:modified_time" content="2021-02-04T08:58:58.709Z">
 <meta property="article:author" content="Lunter">
 <meta property="article:tag" content="axios">
 <meta name="twitter:card" content="summary">
@@ -213,8 +213,11 @@
 </li>
 <li><p>在<strong>main.js</strong>中导入<br><code>import axios from &#39;axios&#39;</code><br><code>import Vueaxios from &#39;vue-axios&#39;</code><br><code>Vue.use(Vueaxios, axios)</code></p>
 </li>
-<li><p>在组件中进行使用</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mounted() &#123;</span><br><span class="line">  this.axios.get(&#39;http:&#x2F;&#x2F;127.0.0.1:5000&#x2F;abc&#39;).then(res &#x3D;&gt;&#123;</span><br><span class="line">    this.test &#x3D; res.data</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</ul>
+<a id="more"></a>
+
+<ul>
+<li>在组件中进行使用<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mounted() &#123;</span><br><span class="line">  this.axios.get(&#39;http:&#x2F;&#x2F;127.0.0.1:5000&#x2F;abc&#39;).then(res &#x3D;&gt;&#123;</span><br><span class="line">    this.test &#x3D; res.data</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>

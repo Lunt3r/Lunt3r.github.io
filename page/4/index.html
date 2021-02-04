@@ -211,46 +211,14 @@
 <li>处理机控制类指令：NOP</li>
 </ul>
 <h3 id="脱壳"><a href="#脱壳" class="headerlink" title="脱壳"></a>脱壳</h3><p>壳是软件逆向分析学的常见主题。为了理解好它，需要掌握有关PE文件格式、操作系统的基本知识（进程、内存、DLL等），同时也要了解有关压缩/解压缩算法的基本内容。</p>
-<p>windows上常见的有三类壳：</p>
-<ul>
-<li><p>压缩壳：为了减小可执行文件的体积，需要对可执行文件进行压缩，可执行文件经过压缩后成为另一个可执行文件</p>
-<ul>
-<li><p>内部含有解压缩代码，文件在运行瞬间于内存中解压缩后执行，程序的功能完全一致</p>
-</li>
-<li><p>压缩是为了缩减PE文件的大小以及隐藏PE文件内部代码与资源(解压缩后可以通过内存的Dump窗口查看)</p>
-<p>分类：</p>
-</li>
-<li><p>单纯用于压缩普通PE文件的压缩壳：UPX、ASPack</p>
-</li>
-<li><p>对源文件进行较大变形、严重破坏PE头的压缩壳：UPack.PESpin、NSAnti</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>加密壳：应用了多种防止代码逆向分析的技术（反调试、反模拟、代码混乱、多态代码、垃圾代码、调试器监视等）来保护PE文件免受代码逆向分析的实用程序</p>
-<ul>
-<li><p>不仅可以保护PE文件本身，还可在文件运行时保护进程内存，防止程序所使用的资源通过内存被dump</p>
-<p>分类：</p>
-</li>
-<li><p>商用保护壳：ASProtect、Themida、SVKP等</p>
-</li>
-<li><p>公用保护壳：UItraProtect、Morphine等</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>VMP壳</li>
-</ul>
-<h3 id="脱壳（压缩壳和部分加密壳）"><a href="#脱壳（压缩壳和部分加密壳）" class="headerlink" title="脱壳（压缩壳和部分加密壳）"></a>脱壳（压缩壳和部分加密壳）</h3><ul>
-<li>脱壳工具</li>
-<li>ESP定律：ESP硬件断点</li>
-<li>单步跟踪法</li>
-<li>内存镜像法：两个内存访问断点</li>
-<li>找PUSHAD对应的POPAD</li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/03/08/%E6%B1%87%E7%BC%96%E7%B3%BB%E5%88%97/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -318,13 +286,14 @@
 <li>char *a表示一个指针变量，只占4个字节</li>
 <li>char * a[ ]中由于[ ]的优先级高于*，所以a先和[ ]结合。于是char * a[ ]表示一个数组，数组中的元素是char *</li>
 </ul>
-<p>详细及更多解释见<a href="https://blog.csdn.net/liusicheng2008_liu/article/details/80412586" target="_blank" rel="noopener">这儿</a></p>
-<h3 id="C-和C-的字符串的区别"><a href="#C-和C-的字符串的区别" class="headerlink" title="C++和C 的字符串的区别"></a>C++和C 的字符串的区别</h3><ul>
-<li>C字符串是基本数据类型，即字符数组；C++字符串是类。</li>
-<li>C字符串函数是外部函数，字符串作为参数被传进来，进而对其进行操作；C++字符串函数是字符串类内部定义的，可以直接进行使用，如<code>str.length()</code>。</li>
-<li>C++字符串里面对一些运算符进行了重载，比如==、=、&lt;、&gt;等。 </li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/03/06/%E5%85%B3%E4%BA%8EC%E7%9A%84%E6%98%93%E6%B7%B7%E5%B0%8F%E9%97%AE%E9%A2%98/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

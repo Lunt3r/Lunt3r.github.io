@@ -28,7 +28,7 @@
 <meta property="og:description" content="SQL注入漏洞在设计程序时，忽略了对输入字符串中夹带的SQL指令的检查，被数据库误认为是正常的SQL指令而运行，从而使数据库受到攻击，可能导致数据被窃取、更改、删除，以及进一步导致网站被嵌入恶意代码、被植入后门程序等危害。SQL注入攻击通过构造巧妙的SQL语句，同网页提交的内容结合起来进行注入攻击。比较常用的手段有使用注释符号、恒等式（如1＝1）、使用union语句进行联合查询、使用insert或">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-04-05T03:08:30.000Z">
-<meta property="article:modified_time" content="2020-04-15T12:16:35.100Z">
+<meta property="article:modified_time" content="2021-02-04T08:59:03.186Z">
 <meta property="article:author" content="Lunter">
 <meta name="twitter:card" content="summary">
 
@@ -208,8 +208,7 @@
       
         <h3 id="SQL注入漏洞"><a href="#SQL注入漏洞" class="headerlink" title="SQL注入漏洞"></a>SQL注入漏洞</h3><p>在设计程序时，忽略了对输入字符串中夹带的SQL指令的检查，被数据库误认为是正常的SQL指令而运行，从而使数据库受到攻击，可能导致数据被窃取、更改、删除，以及进一步导致网站被嵌入恶意代码、被植入后门程序等危害。SQL注入攻击通过构造巧妙的SQL语句，同网页提交的内容结合起来进行注入攻击。比较常用的手段有使用注释符号、恒等式（如1＝1）、使用union语句进行联合查询、使用insert或update语句插入或修改数据等，此外还可以利用一些内置函数辅助攻击。被广泛用于非法获取网站控制权，是发生在应用程序的数据库层上的安全漏洞。</p>
 <ul>
-<li><p>SQL注入的位置包括：</p>
-<ul>
+<li>SQL注入的位置包括：<ul>
 <li>表单提交，主要是POST请求，也包括GET请求；</li>
 <li>URL参数提交，主要为GET请求参数；</li>
 <li>Cookie参数提交；</li>
@@ -217,8 +216,11 @@
 <li>一些边缘的输入点，比如.mp3文件的一些文件信息等。</li>
 </ul>
 </li>
-<li><p>防范措施：</p>
+</ul>
+<a id="more"></a>
+
 <ul>
+<li>防范措施：<ul>
 <li>所有的查询语句都使用数据库提供的参数化查询接口</li>
 <li>对进入数据库的特殊字符（’”&lt;&gt;&amp;*;等）进行转义处理，或编码转换</li>
 <li>确认每种数据的类型</li>
