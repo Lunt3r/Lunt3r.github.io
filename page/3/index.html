@@ -155,6 +155,808 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/10/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95smali%E4%BB%A3%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/10/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95smali%E4%BB%A3%E7%A0%81/" class="post-title-link" itemprop="url">动态调试smali代码</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-10 21:15:27" itemprop="dateCreated datePublished" datetime="2020-03-10T21:15:27+08:00">2020-03-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="导出smali代码"><a href="#导出smali代码" class="headerlink" title="导出smali代码"></a>导出smali代码</h3><ul>
+<li><p>将被调试的apk（此处使用的是<a href="https://www.52pojie.cn/thread-658865-1-1.html" target="_blank" rel="noopener">吾爱-教我兄弟学Android逆向</a>中的例子）拖入<code>AndroidKiller</code>，等待反编译好</p>
+</li>
+<li><p>在<code>工程管理-&gt;smali</code>上右键<code>打开文件路径</code>，将smali文件夹复制出来，并更名为<code>src</code></p>
+</li>
+</ul>
+<h3 id="设置Android-Studio"><a href="#设置Android-Studio" class="headerlink" title="设置Android Studio"></a>设置Android Studio</h3><ul>
+<li><p>下载<strong>ideasmali</strong>插件<br>  插件下载：链接：<a href="https://pan.baidu.com/s/1htl26qS" target="_blank" rel="noopener">https://pan.baidu.com/s/1htl26qS</a> 密码：0pre（同样来源于吾爱那位兄弟）</p>
+</li>
+<li><p>安装插件<br>  打开<code>File-&gt;Setting-&gt;plugins</code>，在右边会看见一个<strong>齿轮</strong>图标，点击然后选择<code>Install Plugin from Disk...</code>，选中下载的文件即可完成安装</p>
+</li>
+<li><p>用Android Studio打开src文件夹，右键<code>Project中的src</code>，选择<code>Make Directory as–Sources Root</code></p>
+</li>
+</ul>
+<h3 id="进行调试"><a href="#进行调试" class="headerlink" title="进行调试"></a>进行调试</h3><ul>
+<li><p>打开虚拟机，将被调试的apk装入虚拟机</p>
+</li>
+<li><p>打开<strong>Android Device Monitor</strong><br>  点击<code>sdk-&gt;tools-&gt;monitor.bat</code></p>
+</li>
+<li><p>在AndroidKiller中打开AndroidManifest.xml<br>  在其中找到<code>android:debuggable=&quot;true&quot;</code>，若为<code>false</code>则改为<code>true</code>,若无则添加</p>
+<p>  记录下包名和入口的Activity名（我这包名hfdcxy.com.myapplication，入口的Activity名：hfdcxy.com.myapplication.MainActivity）</p>
+</li>
+<li><p>打开命令行，输入命令<code>adb shell am start -D -n hfdcxy.com.myapplication/hfdcxy.com.myapplication.MainActivity</code>，此时虚拟机进入<code>Waiting For Debugger</code>模式</p>
+</li>
+<li><p>记录下类似下图的两个值，然后关掉<code>Android Device Monitor</code>；或者通过<code>adb shell ps</code>进行查看（进程名为包名的PID）</p>
+<p>  <img src="https://s1.ax1x.com/2020/04/17/JZoxjU.png" alt=""></p>
+</li>
+<li><p>打开命令行，输入命令<code>adb forward tcp:8700 jdwp:4414</code>（这里 jdwp是自己Android Device Monitor中要调试app的Online值 ）</p>
+</li>
+<li><p>配置<code>Android Studio</code>的SDK<br>  在<code>File-&gt;Project Structure-&gt;Project SDK</code>中进行选择</p>
+</li>
+<li><p>打开<code>Run–&gt;Edit Configurations-&gt;+-&gt;Remote</code>，设置名称(任意，我设置为了Smali)，端口(<strong>8700</strong>)，点击<code>OK</code></p>
+</li>
+<li><p>下好断点，点击<code>Run-&gt;Debug &quot;Smali&quot;</code>或者右上方的<strong>绿色小虫子</strong>图标</p>
+</li>
+<li><p>虚拟机会运行起来，进行操作后（我这是输入账号、密码后按下按钮）会停在断点处</p>
+</li>
+<li><p>可通过点击<code>Run-&gt;Debug &quot;Smali&quot;</code>或者右上方的<strong>绿色小虫子</strong>图标进行反复调试，<code>F8</code>为下一步</p>
+</li>
+<li><p>点击<code>Variables</code>中的<code>眼镜</code>按钮即可打开<code>Watches</code>窗口，在其中点击<strong>+</strong>并输入寄存器的编号即可查看寄存器当前的值</p>
+</li>
+</ul>
+<h3 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h3><ul>
+<li><p>打开<code>Android Device Monitor</code>时弹框<strong>Could not open Selected VM debug port (8700). Make sure you do not have another instance of DDMS or of the eclipse plugin running. If it’s being used by something else, choose a new port number in the preferences.</strong><br>  解决办法：关掉Android Studio重新打开</p>
+</li>
+<li><p>AndroidKiller无法连接模拟器的问题<br>  在cmd中进行<code>adb devices</code>也没有反应<br>  解决办法：将<code>android-sdk-windows-&gt;platform-tools</code>下的<strong>adb.exe</strong>、<code>AndroidKiller-&gt;bin-&gt;adb</code>下的<strong>adb.exe</strong>以及模拟器下（我用的是逍遥，在<code>Microvirt-&gt;MEmu</code>下）的<strong>adb.exe</strong>全替换为一个<strong>adb.exe</strong>（我用的是<code>android-sdk-windows-&gt;platform-tools</code>下的<strong>adb.exe</strong>，因为比较新）</p>
+</li>
+<li><p>对于有些软件有反编译、签名验证或者有壳，则进行修改<code>AndroidManifest.xml</code>中的<code>android:debuggable=&quot;true&quot;</code>无法实现</p>
+<p>  根据android的官方文档，如果调试一个APK，必须满足以下两个条件中的任何一个：<br>  1 <code>APK的AndroidManifest.xml</code>文件中的Application标签包含<code>android:debuggable=&quot;true&quot;</code></p>
+<p>  2 <code>/default.prop</code>中的<code>ro.debuggable=1</code>（修改<strong>boot.img</strong>等）</p>
+<p>  因此当<strong>1</strong>不生效的时候可考虑2方法</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/01/%E6%9D%82/scapy%E6%8A%93%E5%8F%96%E4%B8%BB%E6%9C%BA%E6%B5%81%E9%87%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/01/%E6%9D%82/scapy%E6%8A%93%E5%8F%96%E4%B8%BB%E6%9C%BA%E6%B5%81%E9%87%8F/" class="post-title-link" itemprop="url">scapy的使用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-01 13:08:15" itemprop="dateCreated datePublished" datetime="2020-03-01T13:08:15+08:00">2020-03-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%AF%95%E8%AE%BE%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">毕设系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="scapy入门"><a href="#scapy入门" class="headerlink" title="scapy入门"></a>scapy入门</h1><p>本打算使用<strong>pyshark</strong>的，但使用后发现太多的坑，于是转用<strong>scapy</strong></p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>由于我安装了双版本的python，于是使用命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m pip install scapy</span><br></pre></td></tr></table></figure>
+<p>即可完成安装</p>
+<h3 id="sniff"><a href="#sniff" class="headerlink" title="sniff"></a>sniff</h3><p>导入包：<code>from scapy.sendrecv import sniff</code></p>
+<p>进行嗅探：</p>
+<p><code>dpkt = sniff(iface=&#39;Realtek PCIe GbE Family Controller&#39;, count=1000)</code></p>
+<ul>
+<li><p><code>iface</code>为网卡，在<strong>cmd</strong>下通过<code>ipconfig /all</code>命令查看，其中每个适配器的<strong>描述</strong>字段就是网卡，不填则嗅探所有网卡</p>
+</li>
+<li><p><code>count</code>为每次嗅探的条数</p>
+</li>
+</ul>
+<h3 id="写入，读出"><a href="#写入，读出" class="headerlink" title="写入，读出"></a>写入，读出</h3><p>导入包：<code>from scapy.utils import wrpcap, rdpcap</code></p>
+<p>进行写入：<code>wrpcap(pcapfile_path, dpkt)</code></p>
+<p>进行读取：<code>packages = rdpcap(pcapfile_path)</code></p>
+<h3 id="进行解包"><a href="#进行解包" class="headerlink" title="进行解包"></a>进行解包</h3><ul>
+<li><p>获取当前时间：<code>time.strftime(&#39;%Y-%m-%d %H:%M:%S&#39;, time.localtime(pcap.time))</code></p>
+</li>
+<li><p>获取源IP地址：<code>pcap.getlayer(&#39;IP&#39;).src</code></p>
+</li>
+<li><p>获取目标IP地址：<code>pcap.getlayer(&#39;IP&#39;).dst</code></p>
+</li>
+<li><p>获取源端口：<code>pcap.sport</code></p>
+</li>
+<li><p>获取目的端口：<code>pcap.dport</code></p>
+</li>
+<li><p>获取数据摘要：<code>pcap.summary()</code></p>
+</li>
+<li><p>获取数据包信息：<code>pcap.show()</code></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/28/Android/Android%E5%B7%A5%E5%85%B7%E5%90%88%E9%9B%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/28/Android/Android%E5%B7%A5%E5%85%B7%E5%90%88%E9%9B%86/" class="post-title-link" itemprop="url">Android工具合集</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-28 11:39:22" itemprop="dateCreated datePublished" datetime="2020-02-28T11:39:22+08:00">2020-02-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="apktool"><a href="#apktool" class="headerlink" title="apktool"></a>apktool</h3><p>apktool主要用于逆向apk文件。</p>
+<ul>
+<li><p>安装：<code>https://ibotpeaches.github.io/Apktool/install/</code></p>
+</li>
+<li><p>功能：</p>
+<ul>
+<li>反编译资源回原始资源（包括resources.arsc, classes.dex, 9.png. 和 XMLs）</li>
+<li>将解码的资源重新打包成APK/JAR</li>
+<li>组织和处理依赖于框架资源的APKs</li>
+<li>Smali调试</li>
+<li>帮助重复性执任务</li>
+</ul>
+</li>
+<li><p>使用：</p>
+<ul>
+<li>反编译：<code>apktool d xxx.apk</code></li>
+<li>重新打包：<code>apktool b xxx xxx.apk</code>(未签名)</li>
+</ul>
+</li>
+</ul>
+<h3 id="遇到的一些问题："><a href="#遇到的一些问题：" class="headerlink" title="遇到的一些问题："></a>遇到的一些问题：</h3><ul>
+<li>使用<code>AndroidKiller_v1.3.1</code>进行反编译时出现<strong>APK 反编译失败，无法继续下一步源码反编译!</strong>的提示<br>  解决办法：<br>  用Apktool中的<code>apktool.jar</code>替换<code>AndroidKiller-&gt;bin-&gt;apktool-&gt;apktool-&gt;ShakaApktool.jar</code>，并将名字改为与之相同。重新打开即可成功反编译。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/28/Android/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/28/Android/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">Android逆向基础</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-28 10:31:12" itemprop="dateCreated datePublished" datetime="2020-02-28T10:31:12+08:00">2020-02-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。</p>
+<h3 id="Android开发环境的安装"><a href="#Android开发环境的安装" class="headerlink" title="Android开发环境的安装"></a>Android开发环境的安装</h3><p>安装JDK、NDK、SDK，，并配置好环境变量。</p>
+<h3 id="模拟器的选择"><a href="#模拟器的选择" class="headerlink" title="模拟器的选择"></a>模拟器的选择</h3><p>可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用<code>android_x86_server</code>。</p>
+<h3 id="adb的常见命令"><a href="#adb的常见命令" class="headerlink" title="adb的常见命令"></a>adb的常见命令</h3><ul>
+<li><p><code>adb devices</code></p>
+</li>
+<li><p><code>adb shell</code></p>
+</li>
+<li><p><code>adb -s 设备名 shell</code></p>
+</li>
+<li><p><code>adb install</code></p>
+</li>
+<li><p><code>adb push</code></p>
+</li>
+<li><p><code>adb pull</code></p>
+</li>
+</ul>
+<h3 id="Apk文件"><a href="#Apk文件" class="headerlink" title="Apk文件"></a>Apk文件</h3><p>apk 文件其实是一个zip文件，只是后缀改变了而已。网上找了个结构图如下：<br><img src="https://s1.ax1x.com/2020/03/31/GlZvM8.png" alt=""></p>
+<ul>
+<li><p>AndroidManifest.xml 文件：Android工程的基础配置属性文件，定义了整个应用的运行信息，包括：包名、权限、API 版本、组件等等信息</p>
+</li>
+<li><p>classes.dex 文件：Java代码编译得到的Dalvik VM能直接执行的文件，包含了应用的整个代码逻辑</p>
+</li>
+<li><p>lib 目录：so库存放位置，一般由NDK编译得到，常见于使用游戏弓|擎或JNI native调用的工程中，包含了应用需要的原生库文件，其主要是从<code>c/c++</code>代码编译而来</p>
+<ul>
+<li>armeabi/armeabi-v7a 目录：so库文件分为不同的CPU架构</li>
+</ul>
+</li>
+<li><p>META-INF 目录：存放工程一些属性文件，例如Manifest.MF,如存储了应用的证书和签名信息文件</p>
+</li>
+<li><p>res 目录：资源目录，包含不能打包进 <code>resources.arsc</code>的一些资源文件，如图片、布局信息等</p>
+<ul>
+<li>drawable 目录：图片和对应的xml资源</li>
+<li>layout 目录：定义布局的xml资源</li>
+</ul>
+</li>
+<li><p>resources.arsc 文件：对res目录下的资源的一个索引文件，保存了原工程中strings.xmI等文件内容</p>
+</li>
+<li><p>asset(此网图例没有)：也是资源目录，但与<strong>res</strong>有所区别(具体相同、不同如下)</p>
+<ul>
+<li><p>相同：两者目录下的文件在打包后会原封不动的保存在apk包中，不会被编译成二进制</p>
+</li>
+<li><p>不同：</p>
+<ul>
+<li>res/raw中的文件会被映射到R.java文件中，访问的时候直接使用资源ID即R.id.filename；assets文件夹下的文件不会被映射到R.java中，访问的时候需要AssetManager类</li>
+<li>res/raw不可以有目录结构，而assets则可以有目录结构，也就是assets目录下可以再建立文件夹</li>
+<li>assets文件夹是存放不进行编译加工的原生文件，即该文件夹里面的文件不会像xml，java文件被预编译，可以存放一些图片，html，js，css等文件</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Dalvik"><a href="#Dalvik" class="headerlink" title="Dalvik"></a>Dalvik</h3><p>Dalvik是google专门为Android操作系统设计的一个虚拟机</p>
+<p>虽然Android上的程序是使用java来开发的，但是Dalvik和标准的java虚拟机(JVM)还是两回事</p>
+<ul>
+<li>Dalvik VM是基于寄存器的，而JVM是基于栈的</li>
+<li>Dalvik有专属的文件执行格式dex（dalvik executable），而JVM则执行的是java字节码</li>
+<li>Dalvik VM比JVM速度更快，占用空间更少</li>
+</ul>
+<p>通过Dalvik的字节码我们不能直接看到原来的逻辑代码，这时需要借助如<strong>Apktool</strong>或<strong>jadx</strong>等工具来帮助查看。但是，注意的是最终我们修改APK需要操作的文件是<strong>.smali</strong>文件，而不是将导出来的Java文件重新编译。</p>
+<h3 id="ART"><a href="#ART" class="headerlink" title="ART"></a>ART</h3><p>ART虚拟机是Android4.4发布的，用来替换Dalvik虚拟机的，在Android 5.0时，默认采用ART虚拟机。</p>
+<p>在ART中，系统在安装应用时会进行一次预编译，将字节码预先编译成机器码并存储在本地，而不是像Dalvik每次运行都需要通过即时编译器生成字节码，从而提高了运行的效率。但也因此，ART虚拟机因为需要存储字节码从而占用空间会比较大。</p>
+<h3 id="Smali"><a href="#Smali" class="headerlink" title="Smali"></a>Smali</h3><p>Smali是用于Dalvik的反汇编程序实现，汇编工具(将Smali代码汇编为dex文件)为smali.jar，与之对应的baksmali.jar则是反汇编程序。其语法是Jasmin/dedexer语法</p>
+<p>Smali支持注解、调试信息、线路信息、行数信息等基本Java的基本特性</p>
+<p>在Smali中，如果需要存储变量，必须先声明足够数量的寄存器，1个寄存器可以存储32位长度的类型，64位类型（Long/Double）用2个寄存器表示。本地寄存器用v开头数字结尾的符号来表示，参数寄存器则使用p开头数字结尾的符号来表示。特别注意的是，p0不一定是函数中的第一个参数，在非static函数中，p0代指“this”，p1表示函数的第一个参数，p2代表函数中的第二个参数；而在static函数中p0才对应第一个 参数，因为Java的static方法中没有this方法。</p>
+<p>基本类型：</p>
+<ul>
+<li>V    ：void，只能用于返回类型</li>
+<li>Z    ：boolean</li>
+<li>B    ：byte</li>
+<li>S    ：short</li>
+<li>C    ：char</li>
+<li>I    ：int</li>
+<li>F    ：float</li>
+<li>J    ：long (64 bits)</li>
+<li>D    ：double (64 bits)</li>
+<li>[xxx(I/D…) : array</li>
+<li>Lxxx/yyy(package/objectName); : object</li>
+</ul>
+<p>对于最后一个，例如String对象在smali中为：<code>Ljava/lang/String；</code>，其中java/lang对应java.lang包，String就是定义在该包中的一个对象</p>
+<h3 id="Android启动流程"><a href="#Android启动流程" class="headerlink" title="Android启动流程"></a>Android启动流程</h3><p>网上总结的很全，<a href="https://www.jianshu.com/p/9f978d57c683" target="_blank" rel="noopener">见这儿</a></p>
+<h3 id="Dalvik指令集"><a href="#Dalvik指令集" class="headerlink" title="Dalvik指令集"></a>Dalvik指令集</h3><p>详见<a href="https://source.android.com/devices/tech/dalvik/dalvik-bytecode#instructions" target="_blank" rel="noopener">官方文档</a>或<a href="https://blog.csdn.net/yuanguozhengjust/article/details/80493963" target="_blank" rel="noopener">博客</a></p>
+<ul>
+<li>基本：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">.field private isFlag:z</td>
+<td align="left">定义变量</td>
+</tr>
+<tr>
+<td align="center">.method</td>
+<td align="left">方法</td>
+</tr>
+<tr>
+<td align="center">.parameter</td>
+<td align="left">方法参数</td>
+</tr>
+<tr>
+<td align="center">.prologue</td>
+<td align="left">方法开始</td>
+</tr>
+<tr>
+<td align="center">.line 123</td>
+<td align="left">此方法位于第123行</td>
+</tr>
+<tr>
+<td align="center">invoke-super</td>
+<td align="left">调用父函数</td>
+</tr>
+<tr>
+<td align="center">const/high16 v0，0x7fo3</td>
+<td align="left">把0x7fo3赋值给v0</td>
+</tr>
+<tr>
+<td align="center">invoke-direct</td>
+<td align="left">调用函数</td>
+</tr>
+<tr>
+<td align="center">return-void</td>
+<td align="left">函数返回void</td>
+</tr>
+<tr>
+<td align="center">.end method</td>
+<td align="left">函数结束</td>
+</tr>
+<tr>
+<td align="center">new-instance</td>
+<td align="left">创建实例</td>
+</tr>
+<tr>
+<td align="center">iput-object</td>
+<td align="left">对象赋值</td>
+</tr>
+<tr>
+<td align="center">iget-object</td>
+<td align="left">调用对象</td>
+</tr>
+<tr>
+<td align="center">invoke-static</td>
+<td align="left">调用静态函数</td>
+</tr>
+</tbody></table>
+<ul>
+<li>移位操作:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">move v1,v2</td>
+<td align="left">将v2中的值移入到v1寄存器中（4位，支持int型）</td>
+</tr>
+<tr>
+<td align="center">move/from16 v1,v2</td>
+<td align="left">将16位的v2寄存器中的值移入到8位的v1寄存器中</td>
+</tr>
+<tr>
+<td align="center">move/16 v1,v2</td>
+<td align="left">将16位的v2寄存器中的值移入到16位的v1寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-wide v1,v2</td>
+<td align="left">将寄存器对（一组，用于支持双字型）v2中的值移入到v1寄存器对中（4位，猜测支持float、double型）</td>
+</tr>
+<tr>
+<td align="center">move-wide/from16</td>
+<td align="left">v1,v2    将16位的v2寄存器对（一组）中的值移入到8位的v1寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-wide/16 v1,v2</td>
+<td align="left">将16位的v2寄存器对（一组）中的值移入到16位的v1寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-object v1,v2</td>
+<td align="left">将v2中的对象指针移入到v1寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-object/from16 v1,v2</td>
+<td align="left">将16位的v2寄存器中的对象指针移入到v1（8位）寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-object/16 v1,v2</td>
+<td align="left">将16位的v2寄存器中的对象指针移入到v1（16位）寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-result v1</td>
+<td align="left">将这个指令的上一条指令计算结果，移入到v1寄存器中（需要配合invoke-static、invoke-virtual等指令使用）</td>
+</tr>
+<tr>
+<td align="center">move-result-object v1</td>
+<td align="left">将上条计算结果的对象指针移入v1寄存器</td>
+</tr>
+<tr>
+<td align="center">move-result-wide v1</td>
+<td align="left">将上条计算结果（双字）的对象指针移入v1寄存器</td>
+</tr>
+<tr>
+<td align="center">move-exception v1</td>
+<td align="left">将异常移入v1寄存器，用于捕获try-catch语句中的异常</td>
+</tr>
+</tbody></table>
+<ul>
+<li>返回操作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">return-void</td>
+<td align="left">返回void，即直接返回</td>
+</tr>
+<tr>
+<td align="center">return v1</td>
+<td align="left">返回v1寄存器中的值</td>
+</tr>
+<tr>
+<td align="center">return-object v1</td>
+<td align="left">返回v1寄存器中的对象指针</td>
+</tr>
+<tr>
+<td align="center">return-wide v1</td>
+<td align="left">返回双字型结果给v1寄存器</td>
+</tr>
+</tbody></table>
+<ul>
+<li>常量操作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">const(/4、/16、/hight16) v1 xxx</td>
+<td align="left">将常量xxx赋值给v1寄存器，/后的类型，需要根据xxx的长度选择</td>
+</tr>
+<tr>
+<td align="center">const-wide(/16、/32、/hight16) v1 xxx</td>
+<td align="left">将双字型常量xxx赋值给v1寄存器，/后的类型，需要根据xxx的长度选择</td>
+</tr>
+<tr>
+<td align="center">const-string(/jumbo) v1 “aaa”</td>
+<td align="left">将字符串常量”aaa”赋给v1寄存器，过长时需要加上jumbo</td>
+</tr>
+<tr>
+<td align="center">const-class v1 La/b/TargetClass</td>
+<td align="left">将Class常量a.b.TargetClass赋值给v1，等价于a.b.TargetClass.class</td>
+</tr>
+</tbody></table>
+<ul>
+<li>调用操作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">invoke-virtual</td>
+<td align="left">用于调用一般的，非private、非static、非final、非构造函数的方法，它的第一个参数往往会传p0，也就是this指针</td>
+</tr>
+<tr>
+<td align="center">invoke-super</td>
+<td align="left">用于调用父类中的方法，其他和invoke-virtual保持一致</td>
+</tr>
+<tr>
+<td align="center">invoke-direct</td>
+<td align="left">用于调用private修饰的方法，或者构造方法</td>
+</tr>
+<tr>
+<td align="center">invoke-static</td>
+<td align="left">用于调用静态方法，比如一些工具类</td>
+</tr>
+<tr>
+<td align="center">invoke-interface</td>
+<td align="left">用于调用interface中的方法</td>
+</tr>
+</tbody></table>
+<ul>
+<li>判断操作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">if-eq v1,v2</td>
+<td align="left">判断两个寄存器中的值是否相等</td>
+</tr>
+<tr>
+<td align="center">if-ne v1,v2</td>
+<td align="left">判断两个寄存器中的值是否不相等</td>
+</tr>
+<tr>
+<td align="center">if-lt v1,v2</td>
+<td align="left">判断v1寄存器中的值是否小于v2寄存器中的值（lt == less than）</td>
+</tr>
+<tr>
+<td align="center">if-ge v1,v2</td>
+<td align="left">判断v1寄存器中的值是否大于或等于v2寄存器中的值（ge == great than or equals）</td>
+</tr>
+<tr>
+<td align="center">if-gt v1,v2</td>
+<td align="left">判断v1寄存器中的值是否大于v2寄存器中的值（gt == great than）</td>
+</tr>
+<tr>
+<td align="center">if-le v1,v2</td>
+<td align="left">判断v1寄存器中的值是否小于或等于v2寄存器中的值（le == less than or equals）</td>
+</tr>
+</tbody></table>
+<ul>
+<li>属性操作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">iget</td>
+<td align="left">取值，用于操作int这种的值类型</td>
+</tr>
+<tr>
+<td align="center">iget-wide</td>
+<td align="left">取值，用于操作wide型字段</td>
+</tr>
+<tr>
+<td align="center">iget-object</td>
+<td align="left">取值，用于操作对象引用</td>
+</tr>
+<tr>
+<td align="center">iget-boolean</td>
+<td align="left">取值，用于操作布尔类型</td>
+</tr>
+<tr>
+<td align="center">iget-byte</td>
+<td align="left">取值，用于操作字节类型</td>
+</tr>
+<tr>
+<td align="center">iget-char</td>
+<td align="left">取值，用于操作字符类型</td>
+</tr>
+<tr>
+<td align="center">iget-short</td>
+<td align="left">取值，用于操作short类型</td>
+</tr>
+<tr>
+<td align="center">iput</td>
+<td align="left">赋值，用于操作int这种的值类型</td>
+</tr>
+<tr>
+<td align="center">iput-wide</td>
+<td align="left">赋值，用于操作wide型字段</td>
+</tr>
+<tr>
+<td align="center">iput-object</td>
+<td align="left">赋值，用于操作对象引用</td>
+</tr>
+<tr>
+<td align="center">iput-boolean</td>
+<td align="left">赋值，用于操作布尔类型</td>
+</tr>
+<tr>
+<td align="center">iput-byte</td>
+<td align="left">赋值，用于操作字节类型</td>
+</tr>
+<tr>
+<td align="center">iput-char</td>
+<td align="left">赋值，用于操作字符类型</td>
+</tr>
+<tr>
+<td align="center">iput-short</td>
+<td align="left">赋值，用于操作short类型</td>
+</tr>
+</tbody></table>
+<ul>
+<li>其他指令：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">add-int/lit8 v1, v2, 0x1</td>
+<td align="left">给v2寄存器+1，并存入v1寄存器（注意：lit8是对要加的常量的长度限制，如果不写，则为4位，还可选择lit16，即16位）</td>
+</tr>
+<tr>
+<td align="center">add-int/2addr v1, v2</td>
+<td align="left">将v1、v2寄存器中的值相加，并赋值给v1寄存器</td>
+</tr>
+<tr>
+<td align="center">float-to-int v1, v2</td>
+<td align="left">将v2寄存器中的float类型值转换为int类型，并赋值给v1寄存器</td>
+</tr>
+</tbody></table>
+<h3 id="问题汇总"><a href="#问题汇总" class="headerlink" title="问题汇总"></a>问题汇总</h3><ul>
+<li><p>adb连接雷电模拟器时<code>offline</code>问题：用<code>Android SDK</code>中的<code>adb.exe</code>替换掉雷电模拟器自带的<code>adb.exe</code>即可解决</p>
+</li>
+<li><p>Android远程调试：与Linux远程调试类似，但需要进行用<code>adb forward tcp:23946 tcp:23946</code>端口转发</p>
+</li>
+<li><p>运行<code>adb devices</code>时出现未知设备offline：运行<code>adb kill-server</code> <code>adb start-server</code> <code>adb remount</code></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/16/docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -214,14 +1016,53 @@
 <li><p>Dockerfile文件：一个配置文件，写入“如何构建”的步骤来指定一个镜像如何构建，通过<code>build</code>指令进行构建</p>
 </li>
 </ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/04/16/docker/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><ul>
+<li><p>查看版本：docker version </p>
+</li>
+<li><p>查看镜像列表：docker images</p>
+</li>
+<li><p>搜索镜像：docker search aosp(此处以aosp为例)</p>
+</li>
+<li><p>拉取镜像：docker pull kylemanna/aosp:latest(<code>:</code>后为版本，可指定版本，不加则默认最新版本)</p>
+</li>
+<li><p>使用镜像：docker run xxx(IMAGE可ID但最好用程序名，方便辨别)</p>
+<ul>
+<li>docker run -it angr/angr(-it可开启一个虚拟交互终端)</li>
+</ul>
+</li>
+<li><p>删除镜像：docker rmi xxx(IMAGE ID)</p>
+</li>
+<li><p>查看所有容器：docker ps ‐a</p>
+</li>
+<li><p>启动一个容器：docker start ID(CONTAINER ID)</p>
+</li>
+<li><p>停止一个容器：docker stop ID(CONTAINER ID)</p>
+</li>
+<li><p>进入到容器中：docker exec -it xxx(CONTAINER) /bin/sh(COMMAND)</p>
+</li>
+<li><p>删除一个容器：docker rm -f ID(CONTAINER ID)</p>
+</li>
+<li><p>主机向docker中拷贝文件：docker cp (本地文件路径) (docker container id):(容器中路径)</p>
+</li>
+<li><p>docker向主机中拷贝文件：docker cp (docker container id):(容器中路径) (本地文件路径)</p>
+</li>
+</ul>
+<h3 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h3><ul>
+<li><p>换源：在小鲸鱼上右键，打开<code>setting-&gt;Docker Engine</code>，在<code>registry-mirrors</code>中添加镜像源，然后<code>Apply&amp;Restart</code>即可</p>
+<p>  国内加速镜像源：</p>
+<ul>
+<li><p>Docker中国区官方镜像地址： <a href="https://registry.docker-cn.com" target="_blank" rel="noopener">https://registry.docker-cn.com</a></p>
+</li>
+<li><p>网易地址： <a href="http://hub-mirror.c.163.com" target="_blank" rel="noopener">http://hub-mirror.c.163.com</a></p>
+</li>
+<li><p>中国科技大学地址： <a href="https://docker.mirrors.ustc.edu.cn" target="_blank" rel="noopener">https://docker.mirrors.ustc.edu.cn</a></p>
+</li>
+</ul>
+</li>
+<li><p>在线docker：<br>  可通过<a href="https://labs.play-with-docker.com/" target="_blank" rel="noopener">play-with-docker</a>进行网页使用，每次可使用4小时</p>
+</li>
+</ul>
+
       
     </div>
 
@@ -307,14 +1148,67 @@
 <li><p><code>DELETE FROM table_name [WHERE Clause];</code>：删除数据</p>
 </li>
 </ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/01/16/MySQL%E5%9F%BA%E7%A1%80/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><ul>
+<li><p><strong>LIKE</strong>：LIKE 子句中使用百分号 %字符来表示任意字符，类似于UNIX或正则表达式中的星号 *</p>
+<p>  <a href="https://www.runoob.com/mysql/mysql-tutorial.html" target="_blank" rel="noopener">菜鸟教程</a>上的例子：<br>  <code>SELECT * from runoob_tbl  WHERE runoob_author LIKE &#39;%COM&#39;;</code></p>
+</li>
+<li><p><strong>UNION</strong>：UNION 操作符用于连接两个以上的 SELECT 语句的结果组合到一个结果集合中。多个 SELECT 语句会删除重复的数据</p>
+</li>
+<li><p><strong>排序</strong>： ORDER BY 子句来设定你想按哪个字段哪种方式来进行排序，再返回搜索结果</p>
+<p>  用法：<code>ORDER BY xxx ASC/DESC;</code></p>
+</li>
+<li><p><strong>分组</strong>：GROUP BY 语句根据一个或多个列对结果集进行分组，在分组的列上我们可以使用 COUNT, SUM, AVG,等函数</p>
+<p>  用法：<code>SELECT column_name, COUNT(*) FROM   table_name GROUP BY column_name;</code></p>
+</li>
+<li><p><strong>连接</strong>：</p>
+<ul>
+<li>INNER JOIN（内连接,或等值连接）：获取两个表中字段匹配关系的记录</li>
+<li>LEFT JOIN（左连接）：获取左表所有记录，即使右表没有对应匹配的记录</li>
+<li>RIGHT JOIN（右连接： 获取右表所有记录，即使左表没有对应匹配的记录</li>
+</ul>
+</li>
+<li><p><strong>事务</strong><br>事务的四大特性</p>
+<ul>
+<li><p>原子性：不可分割的操作单元，事务中所有操作，要么全部成功；要么撤回到执行事务之前的状态</p>
+</li>
+<li><p>一致性：如果在执行事务之前数据库是一致的，那么在执行事务之后数据库也还是一致的</p>
+</li>
+<li><p>隔离性：事务操作之间彼此独立和透明互不影响。事务独立运行。这通常使用锁来实现。一个事务处理后的结果，影响了其他事务，那么其他事务会撤回。事务的100%隔离，需要牺牲速度</p>
+</li>
+<li><p>持久性：事务一旦提交，其结果就是永久的。即便发生系统故障，也能恢复</p>
+<p>事务处理：</p>
+</li>
+<li><p>BEGIN：开始一个事务</p>
+</li>
+<li><p>COMMIT：事务确认</p>
+</li>
+<li><p>ROLLBACK：事务回滚</p>
+</li>
+</ul>
+</li>
+<li><p><strong>索引</strong><br>索引也是一张表，该表保存了主键与索引字段，并指向实体表的记录。虽然建立索引会大大提高检索速度，但会降低更新表的速度</p>
+</li>
+<li><p><strong>MYISAM 和 InnoDB（默认引擎） 存储引擎</strong></p>
+<ul>
+<li><p>InnoDB支持事务、外键，MYISAM不支持</p>
+</li>
+<li><p>InnoDB 跨平台可直接拷贝使用，MYISAM 不行</p>
+</li>
+<li><p>DELETE 表时，InnoDB 是一行一行的删除，MYISAM 是先drop表，然后重建表</p>
+</li>
+<li><p>MYISAM提供高速存储和检索，以及全文搜索能力，适合读多，写少；相反InnoDB 适合读少，写多</p>
+</li>
+<li><p>MYISAM支持表锁，InnoDB支持表锁和行锁，默认为行锁</p>
+</li>
+</ul>
+</li>
+<li><p><strong>脏读、不可重读和幻读</strong></p>
+<ul>
+<li>脏读：</li>
+</ul>
+</li>
+</ul>
+
       
     </div>
 
@@ -392,15 +1286,14 @@
 <li>自动补丁：向程序中的某个函数或者某种指令前插入自己的代码</li>
 </ul>
 </li>
+<li><p>安装</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;angr&#x2F;angr-dev</span><br><span class="line">cd angr-dev</span><br><span class="line">mkvirtualenv angr</span><br><span class="line">.&#x2F;setup.sh</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>缺点：当路径很多时，则运行会非常缓慢甚至跑不出来，于是需要借助<code>Z3</code>。</p>
+</li>
 </ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/10/18/%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%87%AA%E5%8A%A8%E5%8C%96%E6%B5%8B%E8%AF%95/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+<h3 id="Z3-Angr的底层"><a href="#Z3-Angr的底层" class="headerlink" title="Z3(Angr的底层)"></a>Z3(Angr的底层)</h3><p>获取地址如下:<a href="https://github.com/Z3Prover/z3" target="_blank" rel="noopener">这儿</a></p>
+
       
     </div>
 
@@ -419,7 +1312,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/01/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E5%9B%9B/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/01/PWN/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E5%9B%9B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpeg">
@@ -433,7 +1326,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/04/01/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E5%9B%9B/" class="post-title-link" itemprop="url">pwn系列之四</a>
+            <a href="/2018/04/01/PWN/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E5%9B%9B/" class="post-title-link" itemprop="url">pwn系列之四</a>
         </h2>
 
         <div class="post-meta">
@@ -556,7 +1449,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/24/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%89/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/24/PWN/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpeg">
@@ -570,7 +1463,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/03/24/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%89/" class="post-title-link" itemprop="url">pwn系列之三</a>
+            <a href="/2018/03/24/PWN/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%89/" class="post-title-link" itemprop="url">pwn系列之三</a>
         </h2>
 
         <div class="post-meta">
@@ -613,347 +1506,20 @@
 <li>snprintf：输出指定字节数到字符串</li>
 <li>syslog：输出日志</li>
 </ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/03/24/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%89/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/05/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%8C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/03/05/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%8C/" class="post-title-link" itemprop="url">pwn系列之二</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-03-05 23:07:53" itemprop="dateCreated datePublished" datetime="2018-03-05T23:07:53+08:00">2018-03-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/pwn%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">pwn系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Buffer-Overflow"><a href="#Buffer-Overflow" class="headerlink" title="Buffer Overflow"></a>Buffer Overflow</h2><h3 id="ret2text"><a href="#ret2text" class="headerlink" title="ret2text"></a>ret2text</h3><p>ret2text 即控制程序执行程序本身已有的的代码。</p>
-<p>先找到可调用的函数地址，再用系列一技巧中的方法可以轻松算出覆盖24个a即可覆盖到返回地址，部分脚本如下。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bash &#x3D; 0x0400607(此为调用系统shell的地址)</span><br><span class="line">q &#x3D; &#39;a&#39;*24 + p64(bash)</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/03/05/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%8C/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/27/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/02/27/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%80/" class="post-title-link" itemprop="url">pwn系列之一</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-02-27 18:07:50" itemprop="dateCreated datePublished" datetime="2018-02-27T18:07:50+08:00">2018-02-27</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/pwn%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">pwn系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="工具安装"><a href="#工具安装" class="headerlink" title="工具安装"></a>工具安装</h3><ul>
-<li>objdump</li>
-<li>readelf</li>
-<li>IDA Pro</li>
-<li>GDB-PEDA</li>
-<li>Pwntools&nbsp;(具体用法见<a href="http://docs.pwntools.com/en/stable/globals.html" target="_blank" rel="noopener">这儿</a>或者下图)</li>
+<h3 id="格式化字符串格式"><a href="#格式化字符串格式" class="headerlink" title="格式化字符串格式"></a>格式化字符串格式</h3><p><code>%[parameter][flags][field width][.precision][length]type</code>  具体各参数可见<a href="https://wiki.x10sec.org/pwn/fmtstr/fmtstr_intro/" target="_blank" rel="noopener">ctfwiki</a></p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>问题出在格式化字符上，只给函数提供字符串，而不提供其他参数，程序依然会成功运行，函数会将字符串后面的内存当做参数进行输出。若能够写入格式化字符串或者其后的内存，则可泄露、修改相应的内存空间，完成攻击。</p>
+<h3 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h3><ul>
+<li>程序崩溃：输入若干个%s即可,但这样仅能造成程序不可用而无法达到攻击的目的。</li>
+<li>泄露内存：利用<code>%n$x</code>来获取栈中被视为第n+1个参数的值(或用%p)；利用%<code>n$s</code>来获取指定参数对应地址的内容</li>
+<li>覆盖内存</li>
 </ul>
-<p><img src="https://s2.ax1x.com/2020/03/05/37a5Ct.md.png" alt=""></p>
-<h3 id="软件保护机制"><a href="#软件保护机制" class="headerlink" title="软件保护机制"></a>软件保护机制</h3><ul>
-<li><p>ASLR</p>
-<p>  内存地址随机化机制（address space layout randomization），有以下三种情况：</p>
-<ul>
-<li>0-表示关闭进程地址空间随机化</li>
-<li>1-表示将mmap的基址，stack和vdso页面随机化</li>
-<li>2-表示在1的基础上增加堆（heap）的随机化</li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/02/27/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%80/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
+<h3 id="小提示"><a href="#小提示" class="headerlink" title="小提示"></a>小提示</h3><p>可使用pwntools自带的<code>FmtStr</code>以及<code>fmtstr_payload</code>函数，示例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line"># context.log_level &#x3D; &#39;debug&#39;</span><br><span class="line"></span><br><span class="line">def exec_fmt(payload):</span><br><span class="line">    p &#x3D; process(&quot;.&#x2F;format&quot;)</span><br><span class="line">    p.sendline(payload)</span><br><span class="line">    info &#x3D; p.recv()</span><br><span class="line">    p.close()</span><br><span class="line">    return info</span><br><span class="line"></span><br><span class="line">autofmt &#x3D; FmtStr(exec_fmt)</span><br><span class="line">print autofmt.offset</span><br></pre></td></tr></table></figure>
+<p>以及<br><code>payload = fmtstr_payload(autofmt.offset, {printf_got: system_add})</code>，其中第一个参数为offset偏移，第二个参数是一个字典，意义是往printf函数的地址，写入system的地址。</p>
+<div style='display: none'>
+https://paper.seebug.org/246/
+</div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/15/%E5%B8%B8%E8%A7%81%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/09/15/%E5%B8%B8%E8%A7%81%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">常见加密算法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-09-15 18:07:52" itemprop="dateCreated datePublished" datetime="2017-09-15T18:07:52+08:00">2017-09-15</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%80%86%E5%90%91%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">逆向系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="加密算法"><a href="#加密算法" class="headerlink" title="加密算法"></a>加密算法</h3><p>加密技术通常分为两大类：“对称式”和“非对称式”。</p>
-<ul>
-<li><p>对称式加密技术</p>
-<p>  对称式加密就是加密和解密使用同一一个密钥，通常称之为”Session Key”。例如DES、AES、RC2、RC4…</p>
-</li>
-<li><p>非对称式加密技术</p>
-<p>  非对称式加密就是加密和解密所使用的不是同一个密钥，通常有两个密钥，称为“公钥”和“私钥”，它们两个必需配对使用，否则不能打开加密文件。这里的”公钥”是指可以对外公布的，”私钥”则不能，只能由持有人一个人知道。它的优越性就在这里，因为对称式的加密方法如果是在网络上传输加密文件就很难不把密钥告诉对方，不管用什么方法都有可能被别窃听到。而非对称式的加密方法有两个密钥，且其中的”公钥”是可以公开的，也就不怕别人知道，收件人解密时只要用自己的私钥即可以，这样就很好地避免了密钥的传输安全性问题。如RSA…</p>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/09/15/%E5%B8%B8%E8%A7%81%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/05/web%E5%AE%89%E5%85%A8%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/04/05/web%E5%AE%89%E5%85%A8%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">web安全基础</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-04-05 11:08:30" itemprop="dateCreated datePublished" datetime="2017-04-05T11:08:30+08:00">2017-04-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">web系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="SQL注入漏洞"><a href="#SQL注入漏洞" class="headerlink" title="SQL注入漏洞"></a>SQL注入漏洞</h3><p>在设计程序时，忽略了对输入字符串中夹带的SQL指令的检查，被数据库误认为是正常的SQL指令而运行，从而使数据库受到攻击，可能导致数据被窃取、更改、删除，以及进一步导致网站被嵌入恶意代码、被植入后门程序等危害。SQL注入攻击通过构造巧妙的SQL语句，同网页提交的内容结合起来进行注入攻击。比较常用的手段有使用注释符号、恒等式（如1＝1）、使用union语句进行联合查询、使用insert或update语句插入或修改数据等，此外还可以利用一些内置函数辅助攻击。被广泛用于非法获取网站控制权，是发生在应用程序的数据库层上的安全漏洞。</p>
-<ul>
-<li>SQL注入的位置包括：<ul>
-<li>表单提交，主要是POST请求，也包括GET请求；</li>
-<li>URL参数提交，主要为GET请求参数；</li>
-<li>Cookie参数提交；</li>
-<li>HTTP请求头部的一些可修改的值，比如Referer、User_Agent等；</li>
-<li>一些边缘的输入点，比如.mp3文件的一些文件信息等。</li>
-</ul>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2017/04/05/web%E5%AE%89%E5%85%A8%E5%9F%BA%E7%A1%80/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
       
     </div>
 
@@ -1039,20 +1605,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">37</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
