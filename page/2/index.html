@@ -155,6 +155,145 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/15/%E8%8E%B7%E5%8F%96dex%E4%B9%8Bdump%E5%86%85%E5%AD%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/15/%E8%8E%B7%E5%8F%96dex%E4%B9%8Bdump%E5%86%85%E5%AD%98/" class="post-title-link" itemprop="url">获取dex之dump内存</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-15 08:40:17" itemprop="dateCreated datePublished" datetime="2020-04-15T08:40:17+08:00">2020-04-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>对于加固，是将加密后的dex文件与壳文件合并生成新的<code>class.dex</code>文件，然后签名重打包生成加固后的apk文件。而对于壳程序加载原dex文件，是dalvik虚拟机加载加固后的apk里的classes.dex文件，并使用<strong>attachBaseContext</strong>方法以及<strong>onCreate</strong>方法进行解密原dex文件并启动原程序。但是无论进行了怎样的加密，最后都是需要经历解密动态加载到内存中的，利用这一点即可进行dump出dex文件。</p>
+<!--
+
+破解加了dex壳的app，关键是要获得解密后的源dex，现在Android加壳技术大多都是通过DexClassLoader或者隐藏的函数openDexFile来将源dex加载进来，然后动态替换Application来启动源程序，跟Windows上传统的PE文件加壳有一定区别。
+要破解传统的壳，需要跟踪控制流找到OEP，然后把源程序从内存中dump下来e799bee5baa6e997aee7ad94e78988e69d8331333361316661，重建输入表，最困难的就是要跟着外壳的控制流走，安全工程师为了加大破解难度，使用了很多技术来让破解者走得更艰难。安全工程师与破解者对抗的关键点就在寻找OEP的困难性上。
+在Android平台上，正因为新兴的dex加壳技术不成熟，导致有些另类的脱壳方法可以绕过分析算法，直接将源程序dump下来。
+举个例子，安卓在4.0版本以后提供openDexFile这个函数来从内存中加载dex，所需要提供的参数是源dex在内存中的地址，所以只要对这个函数下断，然后从寄存器里找到内存地址，就能将解密后的源dex从内存中dump下来，直接对其反编译就能获得源代码了。
+更进一步，关于openDexFile这个函数，其实它与libdvm.so这个库有密不可分的关系，这个库里提供大量操作dex文件的函数，如果对这个库里的相关函数下断，然后从内存中暴力dump一大块内存区域，经常能直接将内存中的源dex给抓下来。
+
+-->
+
+<h3 id="dump内存法一"><a href="#dump内存法一" class="headerlink" title="dump内存法一"></a>dump内存法一</h3><p>通过分析底层加载dex源码发现<strong>libdvm.so</strong>中的<strong>dvmDexFileOpenPartial</strong>函数，该函数有两个参数，一个是dex的起始地址，一个是dex的大小。于是可以使用ida进行动态调试获取信息。</p>
+<ul>
+<li><p>安装好apk，并以调试方式运行</p>
+</li>
+<li><p>启动调试服务并进行端口转发</p>
+</li>
+<li><p>pull出<code>/system/lib/libdvm.so</code>文件</p>
+</li>
+<li><p>将<code>libdvm.so</code>加载入ida并在<strong>dvmDexFileOpenPartial</strong>函数开始处下断点</p>
+</li>
+<li><p>attach进程<br>  点击<code>Debugger-&gt;Attach to process</code>，在选择框中选择apk对应的包名（即apk运行的进程名）并记录下<strong>ID</strong>，然后点击<strong>OK</strong></p>
+</li>
+<li><p>在PC的xxx（此处为ID）端口与手机的相应端口之间建立连接<br>  <code>adb forward tcp:8700 jdwp:xxx（此处为ID）</code></p>
+</li>
+<li><p>使用<strong>jdb</strong>在<strong>java</strong>层将apk attach到电脑上<br>  <code>jdb -connect com.sun.jdi.SocketAttach:hostname=localhost,port=8700</code></p>
+</li>
+<li><p><strong>F9</strong>运行ida，一路ok程序停在预先下好的断点处<br>  此时寄存器R0中对应的就是dex文件的起始地址，R1对应的就是dex文件的大小</p>
+</li>
+<li><p>使用IDC进行dump内存获取dex，脚本如下：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static main(void)</span><br><span class="line">&#123;</span><br><span class="line">	auto fp, dex_addr, end_addr;</span><br><span class="line">	fp &#x3D; fopen(&quot;E:\\Android\\temp\\dump.dex&quot;, &quot;wb&quot;);</span><br><span class="line">	end_addr &#x3D; r0 + r1;</span><br><span class="line">	for(dex_addr &#x3D; r0; dex_addr &lt; end_addr; dex_addr++)</span><br><span class="line">		fputc(Byte(dex_addr), fp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>因为Dalvik虚拟机下对运行的dex文件做了优化，真正在内存中运行的是odex文件</p>
+<ul>
+<li>使用baksmali对odex文件进行反编译</li>
+<li>使用smali进行编译成dex文件</li>
+</ul>
+</li>
+<li><p>得到了dex文件即可对其进行分析了</p>
+</li>
+</ul>
+<h3 id="dump内存法二"><a href="#dump内存法二" class="headerlink" title="dump内存法二"></a>dump内存法二</h3><ul>
+<li><p>按动态调试流程进行</p>
+</li>
+<li><p>在获取到<strong>进程ID</strong>后打开<code>adb shell</code><br>  输入<code>cat /proc/xxx（进程ID）/maps</code>，在结果里找到对应程序的dex文件地址</p>
+</li>
+<li><p>在ida中使用IDC进行dump内存获取dex，脚本如下：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static main(void)&#123;</span><br><span class="line">    auto fp, beg_addr, end_addr, dex_addr;	</span><br><span class="line">    fp &#x3D; fopen(&quot;E:\\Android\\atemp\\dump.dex&quot;, &quot;wb&quot;);	</span><br><span class="line">    beg_addr &#x3D; 0xaaaaaaaa;	</span><br><span class="line">    end_addr &#x3D; 0xbbbbbbbb;	</span><br><span class="line">    for (dex_addr &#x3D; beg_addr; dex_addr &lt; end_addr; dex_addr++ )	</span><br><span class="line">        fputc(Byte(dex_addr), fp);	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>但此法有问题，目前还没弄明白，有待研究，如下图：<br>  <img src="https://s1.ax1x.com/2020/04/28/J4hAp9.md.png" alt=""></p>
+<p>  圈中的是我用<strong>法一</strong>得到的，可以dump出来，但在此时进入<strong>法二</strong>的进程<strong>maps</strong>（图中横线）中却得不到真正的dex地址</p>
+</li>
+</ul>
+<h3 id="dump内存法三"><a href="#dump内存法三" class="headerlink" title="dump内存法三"></a>dump内存法三</h3><p>使用<strong>ZjDroid</strong>。ZjDroid是基于Xposed Framewrok的动态逆向分析模块，逆向分析者可以通过ZjDroid完成以下工作：</p>
+<ul>
+<li><p>DEX文件的内存dump</p>
+</li>
+<li><p>基于Dalvik关键指针的内存BackSmali，有效破解加固应用</p>
+</li>
+<li><p>敏感API的动态监控</p>
+</li>
+<li><p>指定内存区域数据dump</p>
+</li>
+<li><p>获取应用加载DEX信息。</p>
+</li>
+<li><p>获取指定DEX文件加载类信息。</p>
+</li>
+<li><p>dump Dalvik java堆信息。</p>
+</li>
+<li><p>在目标进程动态运行lua脚本。</p>
+</li>
+</ul>
+<h3 id="art虚拟机"><a href="#art虚拟机" class="headerlink" title="art虚拟机"></a>art虚拟机</h3><p>上述都是Dalvik虚拟机下的。对于art虚拟机下，dump的点在于libart.so的OpenMemory函数。而且dump出来的文件是OAT文件，OAT文件类似于Dalvik的ODEX文件。由于OAT文件中包含完整的DEX文件，取出OAT文件的方法非常简单：定位OAT文件中的<strong>DexFile</strong>结构体然后将数据完整导出即可。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/27/ida%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2154,126 +2293,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/16/python/flask%E6%A1%86%E6%9E%B6%E7%9A%84%E4%BD%BF%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/16/python/flask%E6%A1%86%E6%9E%B6%E7%9A%84%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">flask框架的使用</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-16 22:21:26" itemprop="dateCreated datePublished" datetime="2020-03-16T22:21:26+08:00">2020-03-16</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%AF%95%E8%AE%BE%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">毕设系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="使用WEB框架的优点"><a href="#使用WEB框架的优点" class="headerlink" title="使用WEB框架的优点"></a>使用WEB框架的优点</h3><p>web网站发展至今，特别是服务器端，涉及到的知识、内容，非常广泛。这对程序员的要求会越来越高。如果采用成熟，稳健的框架，那么一些基础的工作，比如，安全性，数据流控制等都可以让框架来处理，那么程序开发人员可以把精力放在具体的业务逻辑上面。</p>
-<p>使用框架的优点：</p>
-<ul>
-<li>稳定性和可扩展性强</li>
-<li>可以降低开发难度，提高开发效率</li>
-</ul>
-<p>即避免重复造轮子。</p>
-<h3 id="Flask相较于Django的优势所在"><a href="#Flask相较于Django的优势所在" class="headerlink" title="Flask相较于Django的优势所在"></a>Flask相较于Django的优势所在</h3><ul>
-<li>更轻量级</li>
-<li>更灵活</li>
-<li>有大量插件和扩展可供使用</li>
-<li>对初学者更友好</li>
-</ul>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><ul>
-<li><p>虚拟环境安装</p>
-<p>  使用虚拟环境安装Flask，可以避免包的混乱和版本的冲突，虚拟环境是Python解释器的副本，在虚拟环境中你可以安装扩展包，为每个程序单独创建的虚拟环境，可以保证程序只能访问虚拟环境中的包。而不会影响系统中安装的全局Python解释器，从而保证全局解释器的整洁。</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install virtualenv</span><br><span class="line">pip install virtualenvwrapper</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在虚拟环境中安装Flask</p>
-<ul>
-<li><p>创建虚拟环境：<code>virtualenv test</code>(test为自己的文件名)</p>
-</li>
-<li><p>运行<code>test\Scripts\activate</code>进入虚拟环境，如果成果进入会在文件名前有前缀提示</p>
-</li>
-<li><p>然后就能进行此虚拟环境的库安装了，如安装Flask</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install flask</span><br></pre></td></tr></table></figure></li>
-<li><p>若要退出虚拟环境，运行<code>test\Scripts\deactivate</code></p>
-</li>
-</ul>
-</li>
-<li><p>在PyCharm等编译器中使用虚拟环境</p>
-<p>  在解释器中选中<code>test\Scripts\python.exe</code>即可</p>
-</li>
-<li><p>requirements.txt</p>
-<p>  Python项目中必须包含-个requirements.txt文件，用于记录所有依赖包及其精确的版本号，以便在新环境中进行部署操作。命令如下：</p>
-<p>  <code>pip freeze &gt; requirements.txt</code></p>
-<p>  当在新环境中时，使用如下命令安装：</p>
-<p>  <code>pip install -r requirements.txt</code></p>
-</li>
-</ul>
-<h3 id="Flask程序运行过程"><a href="#Flask程序运行过程" class="headerlink" title="Flask程序运行过程"></a>Flask程序运行过程</h3><ol>
-<li>当客户端想要获取资源时，一般会通过浏览器发起HTTP请求。</li>
-<li>此时，Web服 务器会把来自客户端的所有请求都交给Flask程序实例</li>
-<li>程序实例使用Werkzeug来做路由分发（URL请求和视图函数之间的对应关系）.</li>
-<li>根据每个URL请求，找到具体的视图函数并进行调用。<ul>
-<li>在Flask程序中，路由的实现–般是 通过程序实例的装饰器实现。</li>
-</ul>
-</li>
-<li>Flask调用视图函数后，可以返回两种内容：<ul>
-<li>字符串内容：将视图函数的返回值作为响应的内容，返回给客户端（浏览器）</li>
-<li>HTML模版内容：获取到数据后，把数据传入HTML模板文件中，模板引擎负责渲染HTTP响应数据，然后返回响应数据给客户端（浏览器）</li>
-</ul>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2345,20 +2364,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

@@ -155,6 +155,126 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/16/python/flask%E6%A1%86%E6%9E%B6%E7%9A%84%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/16/python/flask%E6%A1%86%E6%9E%B6%E7%9A%84%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">flask框架的使用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-16 22:21:26" itemprop="dateCreated datePublished" datetime="2020-03-16T22:21:26+08:00">2020-03-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%AF%95%E8%AE%BE%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">毕设系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="使用WEB框架的优点"><a href="#使用WEB框架的优点" class="headerlink" title="使用WEB框架的优点"></a>使用WEB框架的优点</h3><p>web网站发展至今，特别是服务器端，涉及到的知识、内容，非常广泛。这对程序员的要求会越来越高。如果采用成熟，稳健的框架，那么一些基础的工作，比如，安全性，数据流控制等都可以让框架来处理，那么程序开发人员可以把精力放在具体的业务逻辑上面。</p>
+<p>使用框架的优点：</p>
+<ul>
+<li>稳定性和可扩展性强</li>
+<li>可以降低开发难度，提高开发效率</li>
+</ul>
+<p>即避免重复造轮子。</p>
+<h3 id="Flask相较于Django的优势所在"><a href="#Flask相较于Django的优势所在" class="headerlink" title="Flask相较于Django的优势所在"></a>Flask相较于Django的优势所在</h3><ul>
+<li>更轻量级</li>
+<li>更灵活</li>
+<li>有大量插件和扩展可供使用</li>
+<li>对初学者更友好</li>
+</ul>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><ul>
+<li><p>虚拟环境安装</p>
+<p>  使用虚拟环境安装Flask，可以避免包的混乱和版本的冲突，虚拟环境是Python解释器的副本，在虚拟环境中你可以安装扩展包，为每个程序单独创建的虚拟环境，可以保证程序只能访问虚拟环境中的包。而不会影响系统中安装的全局Python解释器，从而保证全局解释器的整洁。</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install virtualenv</span><br><span class="line">pip install virtualenvwrapper</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在虚拟环境中安装Flask</p>
+<ul>
+<li><p>创建虚拟环境：<code>virtualenv test</code>(test为自己的文件名)</p>
+</li>
+<li><p>运行<code>test\Scripts\activate</code>进入虚拟环境，如果成果进入会在文件名前有前缀提示</p>
+</li>
+<li><p>然后就能进行此虚拟环境的库安装了，如安装Flask</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install flask</span><br></pre></td></tr></table></figure></li>
+<li><p>若要退出虚拟环境，运行<code>test\Scripts\deactivate</code></p>
+</li>
+</ul>
+</li>
+<li><p>在PyCharm等编译器中使用虚拟环境</p>
+<p>  在解释器中选中<code>test\Scripts\python.exe</code>即可</p>
+</li>
+<li><p>requirements.txt</p>
+<p>  Python项目中必须包含-个requirements.txt文件，用于记录所有依赖包及其精确的版本号，以便在新环境中进行部署操作。命令如下：</p>
+<p>  <code>pip freeze &gt; requirements.txt</code></p>
+<p>  当在新环境中时，使用如下命令安装：</p>
+<p>  <code>pip install -r requirements.txt</code></p>
+</li>
+</ul>
+<h3 id="Flask程序运行过程"><a href="#Flask程序运行过程" class="headerlink" title="Flask程序运行过程"></a>Flask程序运行过程</h3><ol>
+<li>当客户端想要获取资源时，一般会通过浏览器发起HTTP请求。</li>
+<li>此时，Web服 务器会把来自客户端的所有请求都交给Flask程序实例</li>
+<li>程序实例使用Werkzeug来做路由分发（URL请求和视图函数之间的对应关系）.</li>
+<li>根据每个URL请求，找到具体的视图函数并进行调用。<ul>
+<li>在Flask程序中，路由的实现–般是 通过程序实例的装饰器实现。</li>
+</ul>
+</li>
+<li>Flask调用视图函数后，可以返回两种内容：<ul>
+<li>字符串内容：将视图函数的返回值作为响应的内容，返回给客户端（浏览器）</li>
+<li>HTML模版内容：获取到数据后，把数据传入HTML模板文件中，模板引擎负责渲染HTTP响应数据，然后返回响应数据给客户端（浏览器）</li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/10/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95smali%E4%BB%A3%E7%A0%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1445,95 +1565,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/24/PWN/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/03/24/PWN/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%89/" class="post-title-link" itemprop="url">pwn系列之三</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-03-24 00:03:41" itemprop="dateCreated datePublished" datetime="2018-03-24T00:03:41+08:00">2018-03-24</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/pwn%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">pwn系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="格式化字符串漏洞"><a href="#格式化字符串漏洞" class="headerlink" title="格式化字符串漏洞"></a>格式化字符串漏洞</h2><h3 id="常见的字符串函数"><a href="#常见的字符串函数" class="headerlink" title="常见的字符串函数"></a>常见的字符串函数</h3><ul>
-<li>scanf：从stdin读入</li>
-<li>printf：输出到stdout</li>
-<li>fprintf：输出到指定FILE流</li>
-<li>vprintf：根据参数列表格式化输出到stdout</li>
-<li>vfprintf：根据参数列表格式化输出到指定FILE流</li>
-<li>sprintf：输出到字符串</li>
-<li>snprintf：输出指定字节数到字符串</li>
-<li>syslog：输出日志</li>
-</ul>
-<h3 id="格式化字符串格式"><a href="#格式化字符串格式" class="headerlink" title="格式化字符串格式"></a>格式化字符串格式</h3><p><code>%[parameter][flags][field width][.precision][length]type</code>  具体各参数可见<a href="https://wiki.x10sec.org/pwn/fmtstr/fmtstr_intro/" target="_blank" rel="noopener">ctfwiki</a></p>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>问题出在格式化字符上，只给函数提供字符串，而不提供其他参数，程序依然会成功运行，函数会将字符串后面的内存当做参数进行输出。若能够写入格式化字符串或者其后的内存，则可泄露、修改相应的内存空间，完成攻击。</p>
-<h3 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h3><ul>
-<li>程序崩溃：输入若干个%s即可,但这样仅能造成程序不可用而无法达到攻击的目的。</li>
-<li>泄露内存：利用<code>%n$x</code>来获取栈中被视为第n+1个参数的值(或用%p)；利用%<code>n$s</code>来获取指定参数对应地址的内容</li>
-<li>覆盖内存</li>
-</ul>
-<h3 id="小提示"><a href="#小提示" class="headerlink" title="小提示"></a>小提示</h3><p>可使用pwntools自带的<code>FmtStr</code>以及<code>fmtstr_payload</code>函数，示例代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line">from pwn import *</span><br><span class="line"></span><br><span class="line"># context.log_level &#x3D; &#39;debug&#39;</span><br><span class="line"></span><br><span class="line">def exec_fmt(payload):</span><br><span class="line">    p &#x3D; process(&quot;.&#x2F;format&quot;)</span><br><span class="line">    p.sendline(payload)</span><br><span class="line">    info &#x3D; p.recv()</span><br><span class="line">    p.close()</span><br><span class="line">    return info</span><br><span class="line"></span><br><span class="line">autofmt &#x3D; FmtStr(exec_fmt)</span><br><span class="line">print autofmt.offset</span><br></pre></td></tr></table></figure>
-<p>以及<br><code>payload = fmtstr_payload(autofmt.offset, {printf_got: system_add})</code>，其中第一个参数为offset偏移，第二个参数是一个字典，意义是往printf函数的地址，写入system的地址。</p>
-<div style='display: none'>
-https://paper.seebug.org/246/
-</div>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1605,20 +1636,20 @@ https://paper.seebug.org/246/
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
