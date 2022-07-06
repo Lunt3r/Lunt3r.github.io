@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/favicon-16x16-next.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="概述Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。 Android开发环境的安装安装JDK、NDK、SDK，，并配置好环境变量。 模拟器的选择可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用android_x86_server。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android逆向基础">
+<meta property="og:url" content="http://yoursite.com/2020/02/28/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Lunter&#39;s blog">
+<meta property="og:description" content="概述Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。 Android开发环境的安装安装JDK、NDK、SDK，，并配置好环境变量。 模拟器的选择可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用android_x86_server。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2020/03/31/GlZvM8.png">
+<meta property="article:published_time" content="2020-02-28T02:31:12.000Z">
+<meta property="article:modified_time" content="2021-02-04T08:58:12.573Z">
+<meta property="article:author" content="Lunter">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2020/03/31/GlZvM8.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/02/28/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android逆向基础 | Lunter's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lunter's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/28/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android逆向基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-28 10:31:12" itemprop="dateCreated datePublished" datetime="2020-02-28T10:31:12+08:00">2020-02-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。</p>
+<h3 id="Android开发环境的安装"><a href="#Android开发环境的安装" class="headerlink" title="Android开发环境的安装"></a>Android开发环境的安装</h3><p>安装JDK、NDK、SDK，，并配置好环境变量。</p>
+<h3 id="模拟器的选择"><a href="#模拟器的选择" class="headerlink" title="模拟器的选择"></a>模拟器的选择</h3><p>可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用<code>android_x86_server</code>。</p>
+<a id="more"></a>
+
+<h3 id="adb的常见命令"><a href="#adb的常见命令" class="headerlink" title="adb的常见命令"></a>adb的常见命令</h3><ul>
+<li><p><code>adb devices</code></p>
+</li>
+<li><p><code>adb shell</code></p>
+</li>
+<li><p><code>adb -s 设备名 shell</code></p>
+</li>
+<li><p><code>adb install</code></p>
+</li>
+<li><p><code>adb push</code></p>
+</li>
+<li><p><code>adb pull</code></p>
+</li>
+</ul>
+<h3 id="Apk文件"><a href="#Apk文件" class="headerlink" title="Apk文件"></a>Apk文件</h3><p>apk 文件其实是一个zip文件，只是后缀改变了而已。网上找了个结构图如下：<br><img src="https://s1.ax1x.com/2020/03/31/GlZvM8.png" alt=""></p>
+<ul>
+<li><p>AndroidManifest.xml 文件：Android工程的基础配置属性文件，定义了整个应用的运行信息，包括：包名、权限、API 版本、组件等等信息</p>
+</li>
+<li><p>classes.dex 文件：Java代码编译得到的Dalvik VM能直接执行的文件，包含了应用的整个代码逻辑</p>
+</li>
+<li><p>lib 目录：so库存放位置，一般由NDK编译得到，常见于使用游戏弓|擎或JNI native调用的工程中，包含了应用需要的原生库文件，其主要是从<code>c/c++</code>代码编译而来</p>
+<ul>
+<li>armeabi/armeabi-v7a 目录：so库文件分为不同的CPU架构</li>
+</ul>
+</li>
+<li><p>META-INF 目录：存放工程一些属性文件，例如Manifest.MF,如存储了应用的证书和签名信息文件</p>
+</li>
+<li><p>res 目录：资源目录，包含不能打包进 <code>resources.arsc</code>的一些资源文件，如图片、布局信息等</p>
+<ul>
+<li>drawable 目录：图片和对应的xml资源</li>
+<li>layout 目录：定义布局的xml资源</li>
+</ul>
+</li>
+<li><p>resources.arsc 文件：对res目录下的资源的一个索引文件，保存了原工程中strings.xmI等文件内容</p>
+</li>
+<li><p>asset(此网图例没有)：也是资源目录，但与<strong>res</strong>有所区别(具体相同、不同如下)</p>
+<ul>
+<li><p>相同：两者目录下的文件在打包后会原封不动的保存在apk包中，不会被编译成二进制</p>
+</li>
+<li><p>不同：</p>
+<ul>
+<li>res/raw中的文件会被映射到R.java文件中，访问的时候直接使用资源ID即R.id.filename；assets文件夹下的文件不会被映射到R.java中，访问的时候需要AssetManager类</li>
+<li>res/raw不可以有目录结构，而assets则可以有目录结构，也就是assets目录下可以再建立文件夹</li>
+<li>assets文件夹是存放不进行编译加工的原生文件，即该文件夹里面的文件不会像xml，java文件被预编译，可以存放一些图片，html，js，css等文件</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Dalvik"><a href="#Dalvik" class="headerlink" title="Dalvik"></a>Dalvik</h3><p>Dalvik是google专门为Android操作系统设计的一个虚拟机</p>
+<p>虽然Android上的程序是使用java来开发的，但是Dalvik和标准的java虚拟机(JVM)还是两回事</p>
+<ul>
+<li>Dalvik VM是基于寄存器的，而JVM是基于栈的</li>
+<li>Dalvik有专属的文件执行格式dex（dalvik executable），而JVM则执行的是java字节码</li>
+<li>Dalvik VM比JVM速度更快，占用空间更少</li>
+</ul>
+<p>通过Dalvik的字节码我们不能直接看到原来的逻辑代码，这时需要借助如<strong>Apktool</strong>或<strong>jadx</strong>等工具来帮助查看。但是，注意的是最终我们修改APK需要操作的文件是<strong>.smali</strong>文件，而不是将导出来的Java文件重新编译。</p>
+<h3 id="ART"><a href="#ART" class="headerlink" title="ART"></a>ART</h3><p>ART虚拟机是Android4.4发布的，用来替换Dalvik虚拟机的，在Android 5.0时，默认采用ART虚拟机。</p>
+<p>在ART中，系统在安装应用时会进行一次预编译，将字节码预先编译成机器码并存储在本地，而不是像Dalvik每次运行都需要通过即时编译器生成字节码，从而提高了运行的效率。但也因此，ART虚拟机因为需要存储字节码从而占用空间会比较大。</p>
+<h3 id="Smali"><a href="#Smali" class="headerlink" title="Smali"></a>Smali</h3><p>Smali是用于Dalvik的反汇编程序实现，汇编工具(将Smali代码汇编为dex文件)为smali.jar，与之对应的baksmali.jar则是反汇编程序。其语法是Jasmin/dedexer语法</p>
+<p>Smali支持注解、调试信息、线路信息、行数信息等基本Java的基本特性</p>
+<p>在Smali中，如果需要存储变量，必须先声明足够数量的寄存器，1个寄存器可以存储32位长度的类型，64位类型（Long/Double）用2个寄存器表示。本地寄存器用v开头数字结尾的符号来表示，参数寄存器则使用p开头数字结尾的符号来表示。特别注意的是，p0不一定是函数中的第一个参数，在非static函数中，p0代指“this”，p1表示函数的第一个参数，p2代表函数中的第二个参数；而在static函数中p0才对应第一个 参数，因为Java的static方法中没有this方法。</p>
+<p>基本类型：</p>
+<ul>
+<li>V    ：void，只能用于返回类型</li>
+<li>Z    ：boolean</li>
+<li>B    ：byte</li>
+<li>S    ：short</li>
+<li>C    ：char</li>
+<li>I    ：int</li>
+<li>F    ：float</li>
+<li>J    ：long (64 bits)</li>
+<li>D    ：double (64 bits)</li>
+<li>[xxx(I/D…) : array</li>
+<li>Lxxx/yyy(package/objectName); : object</li>
+</ul>
+<p>对于最后一个，例如String对象在smali中为：<code>Ljava/lang/String；</code>，其中java/lang对应java.lang包，String就是定义在该包中的一个对象</p>
+<h3 id="Android启动流程"><a href="#Android启动流程" class="headerlink" title="Android启动流程"></a>Android启动流程</h3><p>网上总结的很全，<a href="https://www.jianshu.com/p/9f978d57c683" target="_blank" rel="noopener">见这儿</a></p>
+<h3 id="Dalvik指令集"><a href="#Dalvik指令集" class="headerlink" title="Dalvik指令集"></a>Dalvik指令集</h3><p>详见<a href="https://source.android.com/devices/tech/dalvik/dalvik-bytecode#instructions" target="_blank" rel="noopener">官方文档</a>或<a href="https://blog.csdn.net/yuanguozhengjust/article/details/80493963" target="_blank" rel="noopener">博客</a></p>
+<ul>
+<li>基本：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">.field private isFlag:z</td>
+<td align="left">定义变量</td>
+</tr>
+<tr>
+<td align="center">.method</td>
+<td align="left">方法</td>
+</tr>
+<tr>
+<td align="center">.parameter</td>
+<td align="left">方法参数</td>
+</tr>
+<tr>
+<td align="center">.prologue</td>
+<td align="left">方法开始</td>
+</tr>
+<tr>
+<td align="center">.line 123</td>
+<td align="left">此方法位于第123行</td>
+</tr>
+<tr>
+<td align="center">invoke-super</td>
+<td align="left">调用父函数</td>
+</tr>
+<tr>
+<td align="center">const/high16 v0，0x7fo3</td>
+<td align="left">把0x7fo3赋值给v0</td>
+</tr>
+<tr>
+<td align="center">invoke-direct</td>
+<td align="left">调用函数</td>
+</tr>
+<tr>
+<td align="center">return-void</td>
+<td align="left">函数返回void</td>
+</tr>
+<tr>
+<td align="center">.end method</td>
+<td align="left">函数结束</td>
+</tr>
+<tr>
+<td align="center">new-instance</td>
+<td align="left">创建实例</td>
+</tr>
+<tr>
+<td align="center">iput-object</td>
+<td align="left">对象赋值</td>
+</tr>
+<tr>
+<td align="center">iget-object</td>
+<td align="left">调用对象</td>
+</tr>
+<tr>
+<td align="center">invoke-static</td>
+<td align="left">调用静态函数</td>
+</tr>
+</tbody></table>
+<ul>
+<li>移位操作:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">move v1,v2</td>
+<td align="left">将v2中的值移入到v1寄存器中（4位，支持int型）</td>
+</tr>
+<tr>
+<td align="center">move/from16 v1,v2</td>
+<td align="left">将16位的v2寄存器中的值移入到8位的v1寄存器中</td>
+</tr>
+<tr>
+<td align="center">move/16 v1,v2</td>
+<td align="left">将16位的v2寄存器中的值移入到16位的v1寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-wide v1,v2</td>
+<td align="left">将寄存器对（一组，用于支持双字型）v2中的值移入到v1寄存器对中（4位，猜测支持float、double型）</td>
+</tr>
+<tr>
+<td align="center">move-wide/from16</td>
+<td align="left">v1,v2    将16位的v2寄存器对（一组）中的值移入到8位的v1寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-wide/16 v1,v2</td>
+<td align="left">将16位的v2寄存器对（一组）中的值移入到16位的v1寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-object v1,v2</td>
+<td align="left">将v2中的对象指针移入到v1寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-object/from16 v1,v2</td>
+<td align="left">将16位的v2寄存器中的对象指针移入到v1（8位）寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-object/16 v1,v2</td>
+<td align="left">将16位的v2寄存器中的对象指针移入到v1（16位）寄存器中</td>
+</tr>
+<tr>
+<td align="center">move-result v1</td>
+<td align="left">将这个指令的上一条指令计算结果，移入到v1寄存器中（需要配合invoke-static、invoke-virtual等指令使用）</td>
+</tr>
+<tr>
+<td align="center">move-result-object v1</td>
+<td align="left">将上条计算结果的对象指针移入v1寄存器</td>
+</tr>
+<tr>
+<td align="center">move-result-wide v1</td>
+<td align="left">将上条计算结果（双字）的对象指针移入v1寄存器</td>
+</tr>
+<tr>
+<td align="center">move-exception v1</td>
+<td align="left">将异常移入v1寄存器，用于捕获try-catch语句中的异常</td>
+</tr>
+</tbody></table>
+<ul>
+<li>返回操作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">return-void</td>
+<td align="left">返回void，即直接返回</td>
+</tr>
+<tr>
+<td align="center">return v1</td>
+<td align="left">返回v1寄存器中的值</td>
+</tr>
+<tr>
+<td align="center">return-object v1</td>
+<td align="left">返回v1寄存器中的对象指针</td>
+</tr>
+<tr>
+<td align="center">return-wide v1</td>
+<td align="left">返回双字型结果给v1寄存器</td>
+</tr>
+</tbody></table>
+<ul>
+<li>常量操作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">const(/4、/16、/hight16) v1 xxx</td>
+<td align="left">将常量xxx赋值给v1寄存器，/后的类型，需要根据xxx的长度选择</td>
+</tr>
+<tr>
+<td align="center">const-wide(/16、/32、/hight16) v1 xxx</td>
+<td align="left">将双字型常量xxx赋值给v1寄存器，/后的类型，需要根据xxx的长度选择</td>
+</tr>
+<tr>
+<td align="center">const-string(/jumbo) v1 “aaa”</td>
+<td align="left">将字符串常量”aaa”赋给v1寄存器，过长时需要加上jumbo</td>
+</tr>
+<tr>
+<td align="center">const-class v1 La/b/TargetClass</td>
+<td align="left">将Class常量a.b.TargetClass赋值给v1，等价于a.b.TargetClass.class</td>
+</tr>
+</tbody></table>
+<ul>
+<li>调用操作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">invoke-virtual</td>
+<td align="left">用于调用一般的，非private、非static、非final、非构造函数的方法，它的第一个参数往往会传p0，也就是this指针</td>
+</tr>
+<tr>
+<td align="center">invoke-super</td>
+<td align="left">用于调用父类中的方法，其他和invoke-virtual保持一致</td>
+</tr>
+<tr>
+<td align="center">invoke-direct</td>
+<td align="left">用于调用private修饰的方法，或者构造方法</td>
+</tr>
+<tr>
+<td align="center">invoke-static</td>
+<td align="left">用于调用静态方法，比如一些工具类</td>
+</tr>
+<tr>
+<td align="center">invoke-interface</td>
+<td align="left">用于调用interface中的方法</td>
+</tr>
+</tbody></table>
+<ul>
+<li>判断操作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">if-eq v1,v2</td>
+<td align="left">判断两个寄存器中的值是否相等</td>
+</tr>
+<tr>
+<td align="center">if-ne v1,v2</td>
+<td align="left">判断两个寄存器中的值是否不相等</td>
+</tr>
+<tr>
+<td align="center">if-lt v1,v2</td>
+<td align="left">判断v1寄存器中的值是否小于v2寄存器中的值（lt == less than）</td>
+</tr>
+<tr>
+<td align="center">if-ge v1,v2</td>
+<td align="left">判断v1寄存器中的值是否大于或等于v2寄存器中的值（ge == great than or equals）</td>
+</tr>
+<tr>
+<td align="center">if-gt v1,v2</td>
+<td align="left">判断v1寄存器中的值是否大于v2寄存器中的值（gt == great than）</td>
+</tr>
+<tr>
+<td align="center">if-le v1,v2</td>
+<td align="left">判断v1寄存器中的值是否小于或等于v2寄存器中的值（le == less than or equals）</td>
+</tr>
+</tbody></table>
+<ul>
+<li>属性操作：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">iget</td>
+<td align="left">取值，用于操作int这种的值类型</td>
+</tr>
+<tr>
+<td align="center">iget-wide</td>
+<td align="left">取值，用于操作wide型字段</td>
+</tr>
+<tr>
+<td align="center">iget-object</td>
+<td align="left">取值，用于操作对象引用</td>
+</tr>
+<tr>
+<td align="center">iget-boolean</td>
+<td align="left">取值，用于操作布尔类型</td>
+</tr>
+<tr>
+<td align="center">iget-byte</td>
+<td align="left">取值，用于操作字节类型</td>
+</tr>
+<tr>
+<td align="center">iget-char</td>
+<td align="left">取值，用于操作字符类型</td>
+</tr>
+<tr>
+<td align="center">iget-short</td>
+<td align="left">取值，用于操作short类型</td>
+</tr>
+<tr>
+<td align="center">iput</td>
+<td align="left">赋值，用于操作int这种的值类型</td>
+</tr>
+<tr>
+<td align="center">iput-wide</td>
+<td align="left">赋值，用于操作wide型字段</td>
+</tr>
+<tr>
+<td align="center">iput-object</td>
+<td align="left">赋值，用于操作对象引用</td>
+</tr>
+<tr>
+<td align="center">iput-boolean</td>
+<td align="left">赋值，用于操作布尔类型</td>
+</tr>
+<tr>
+<td align="center">iput-byte</td>
+<td align="left">赋值，用于操作字节类型</td>
+</tr>
+<tr>
+<td align="center">iput-char</td>
+<td align="left">赋值，用于操作字符类型</td>
+</tr>
+<tr>
+<td align="center">iput-short</td>
+<td align="left">赋值，用于操作short类型</td>
+</tr>
+</tbody></table>
+<ul>
+<li>其他指令：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">指令</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">add-int/lit8 v1, v2, 0x1</td>
+<td align="left">给v2寄存器+1，并存入v1寄存器（注意：lit8是对要加的常量的长度限制，如果不写，则为4位，还可选择lit16，即16位）</td>
+</tr>
+<tr>
+<td align="center">add-int/2addr v1, v2</td>
+<td align="left">将v1、v2寄存器中的值相加，并赋值给v1寄存器</td>
+</tr>
+<tr>
+<td align="center">float-to-int v1, v2</td>
+<td align="left">将v2寄存器中的float类型值转换为int类型，并赋值给v1寄存器</td>
+</tr>
+</tbody></table>
+<h3 id="问题汇总"><a href="#问题汇总" class="headerlink" title="问题汇总"></a>问题汇总</h3><ul>
+<li><p>adb连接雷电模拟器时<code>offline</code>问题：用<code>Android SDK</code>中的<code>adb.exe</code>替换掉雷电模拟器自带的<code>adb.exe</code>即可解决</p>
+</li>
+<li><p>Android远程调试：与Linux远程调试类似，但需要进行用<code>adb forward tcp:23946 tcp:23946</code>端口转发</p>
+</li>
+<li><p>运行<code>adb devices</code>时出现未知设备offline：运行<code>adb kill-server</code> <code>adb start-server</code> <code>adb remount</code></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/04/16/docker/" rel="prev" title="docker">
+      <i class="fa fa-chevron-left"></i> docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/28/Android%E5%B7%A5%E5%85%B7%E5%90%88%E9%9B%86/" rel="next" title="Android工具合集">
+      Android工具合集 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android开发环境的安装"><span class="nav-number">2.</span> <span class="nav-text">Android开发环境的安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟器的选择"><span class="nav-number">3.</span> <span class="nav-text">模拟器的选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#adb的常见命令"><span class="nav-number">4.</span> <span class="nav-text">adb的常见命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Apk文件"><span class="nav-number">5.</span> <span class="nav-text">Apk文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dalvik"><span class="nav-number">6.</span> <span class="nav-text">Dalvik</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ART"><span class="nav-number">7.</span> <span class="nav-text">ART</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Smali"><span class="nav-number">8.</span> <span class="nav-text">Smali</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android启动流程"><span class="nav-number">9.</span> <span class="nav-text">Android启动流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dalvik指令集"><span class="nav-number">10.</span> <span class="nav-text">Dalvik指令集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题汇总"><span class="nav-number">11.</span> <span class="nav-text">问题汇总</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lunter"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Lunter</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lulu</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

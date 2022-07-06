@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/favicon-16x16-next.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="调试器状态检测根据android的官方文档，如果调试一个APK，必须满足以下两个条件中的任何一个：1 APK的AndroidManifest.xml文件中的Application标签包含android:debuggable&#x3D;&quot;true&quot;2 &#x2F;default.prop中的ro.debuggable&#x3D;1根据Android SDK提供的android.os.Debug.isDebug">
+<meta property="og:type" content="article">
+<meta property="og:title" content="反调试分析">
+<meta property="og:url" content="http://yoursite.com/2020/04/22/%E5%8F%8D%E8%B0%83%E8%AF%95%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Lunter&#39;s blog">
+<meta property="og:description" content="调试器状态检测根据android的官方文档，如果调试一个APK，必须满足以下两个条件中的任何一个：1 APK的AndroidManifest.xml文件中的Application标签包含android:debuggable&#x3D;&quot;true&quot;2 &#x2F;default.prop中的ro.debuggable&#x3D;1根据Android SDK提供的android.os.Debug.isDebug">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-22T09:24:35.000Z">
+<meta property="article:modified_time" content="2021-02-04T08:57:44.096Z">
+<meta property="article:author" content="Lunter">
+<meta property="article:tag" content="反调试">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/22/%E5%8F%8D%E8%B0%83%E8%AF%95%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>反调试分析 | Lunter's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lunter's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/22/%E5%8F%8D%E8%B0%83%E8%AF%95%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          反调试分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-22 17:24:35" itemprop="dateCreated datePublished" datetime="2020-04-22T17:24:35+08:00">2020-04-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="调试器状态检测"><a href="#调试器状态检测" class="headerlink" title="调试器状态检测"></a>调试器状态检测</h3><p>根据android的官方文档，如果调试一个APK，必须满足以下两个条件中的任何一个：<br>1 <code>APK的AndroidManifest.xml</code>文件中的Application标签包含<code>android:debuggable=&quot;true&quot;</code><br>2 <code>/default.prop</code>中的<code>ro.debuggable=1</code><br>根据Android SDK提供的<code>android.os.Debug.isDebuggerConnected()</code>方法可以进行判断程序是否被调试器调试了。</p>
+<p>因此，当程序被设定为禁止调试时通过修改<code>android:debuggable=&quot;true&quot;</code>来进行反反调试就行不通了，此时只能进行修改<strong>boot.img</strong>等方法来进行反反调试了。</p>
+<h3 id="调试器端口检测"><a href="#调试器端口检测" class="headerlink" title="调试器端口检测"></a>调试器端口检测</h3><p>调试器远程调试时，会占用一些固定的端口号，如23946。因此可进行读取/proc/net/tcp进行查看，若发现23946端口正在被使用，则说明程序在被调试。</p>
+<p>可以在启动调试程序时修改端口，如使用命令<code>./android_server -p12345</code>以及<code>adb forward tcp:12345 tcp:12345</code>进行反反调试。</p>
+<a id="more"></a>
+
+<h3 id="调试器进程名检测"><a href="#调试器进程名检测" class="headerlink" title="调试器进程名检测"></a>调试器进程名检测</h3><p>要远程调试则需要在手机中运行<strong>android_server</strong>、<strong>gdbserver</strong>等进程。因此可以通过读取<strong>ps</strong>进行遍历进程，查找固定的进程名，若能找到则说明程序在被调试。</p>
+<p>可以修改<strong>android_server</strong>、<strong>gdbserver</strong>等程序名称来进行反反调试。</p>
+<h3 id="Tracerpid检测"><a href="#Tracerpid检测" class="headerlink" title="Tracerpid检测"></a>Tracerpid检测</h3><p>当程序未被调试时，<code>/proc/pidxxx/status</code>中的Tracerpid字段会为<strong>0</strong>。若程序在被进行调试，则Tracerpid字段的值就会改变。因此可以对Tracerpid字段进行检测，从而判断程序是否被调试。</p>
+<h3 id="ptrace检测"><a href="#ptrace检测" class="headerlink" title="ptrace检测"></a>ptrace检测</h3><p>每个进程同时刻只能被1个调试进程ptrace。因此，当程序被调试器进行调试后，如果程序再对自己进行ptrace就会失败，从而知晓程序在被调试。亦或者直接进行ptrace自己，从而让调试器无法进行附加调试，而且此时Tracerpid字段肯定不为<strong>0</strong>。如果使用修改系统源码再重新编译的方法对<strong>Tracerpid检测</strong>反调试进行绕过，则此时Tracerpid字段会为0，从而知道源码被修改了。</p>
+<h3 id="断点检测"><a href="#断点检测" class="headerlink" title="断点检测"></a>断点检测</h3><p>调试器从下断点到执行断点的过程：<br>1 保存：保存目标处指令及数据<br>2 替换：目标处指令替换为断点指令<br>3 命中断点：命中断点指令(引发中断或者说发出SIGTRAP信号)<br>4 收到信号：调试器收到SIGTRAP信号后，执行调试器注册的信号处理函数。<br>5 恢复：调试器处理函数恢复保存的指令<br>6 回退：回退PC寄存器<br>7 回归：控制权回归原程序</p>
+<p>因此可对so中的在可执行segment进行遍历，查看是否出现ARM、Thumb以及Thumb2的<strong>断点指令</strong>即可判断程序是否被调试。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8F%8D%E8%B0%83%E8%AF%95/" rel="tag"># 反调试</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/15/%E8%8E%B7%E5%8F%96dex%E4%B9%8Bdump%E5%86%85%E5%AD%98/" rel="prev" title="获取dex之dump内存">
+      <i class="fa fa-chevron-left"></i> 获取dex之dump内存
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/14/angr/" rel="next" title="angr">
+      angr <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#调试器状态检测"><span class="nav-number">1.</span> <span class="nav-text">调试器状态检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试器端口检测"><span class="nav-number">2.</span> <span class="nav-text">调试器端口检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试器进程名检测"><span class="nav-number">3.</span> <span class="nav-text">调试器进程名检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tracerpid检测"><span class="nav-number">4.</span> <span class="nav-text">Tracerpid检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ptrace检测"><span class="nav-number">5.</span> <span class="nav-text">ptrace检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#断点检测"><span class="nav-number">6.</span> <span class="nav-text">断点检测</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lunter"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Lunter</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lulu</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

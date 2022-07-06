@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/favicon-16x16-next.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="工具安装 objdump readelf IDA Pro GDB-PEDA Pwntools&amp;nbsp;(具体用法见这儿或者下图)   软件保护机制 ASLR   内存地址随机化机制（address space layout randomization），有以下三种情况：  0-表示关闭进程地址空间随机化 1-表示将mmap的基址，stack和vdso页面随机化 2-表示在1的基础上增加堆（hea">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwn系列之一">
+<meta property="og:url" content="http://yoursite.com/2018/02/27/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%80/index.html">
+<meta property="og:site_name" content="Lunter&#39;s blog">
+<meta property="og:description" content="工具安装 objdump readelf IDA Pro GDB-PEDA Pwntools&amp;nbsp;(具体用法见这儿或者下图)   软件保护机制 ASLR   内存地址随机化机制（address space layout randomization），有以下三种情况：  0-表示关闭进程地址空间随机化 1-表示将mmap的基址，stack和vdso页面随机化 2-表示在1的基础上增加堆（hea">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.ax1x.com/2020/03/05/37a5Ct.md.png">
+<meta property="og:image" content="https://s1.ax1x.com/2020/03/17/8dE3wQ.png">
+<meta property="article:published_time" content="2018-02-27T10:07:50.000Z">
+<meta property="article:modified_time" content="2021-02-04T08:58:47.959Z">
+<meta property="article:author" content="Lunter">
+<meta property="article:tag" content="pwn">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.ax1x.com/2020/03/05/37a5Ct.md.png">
+
+<link rel="canonical" href="http://yoursite.com/2018/02/27/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>pwn系列之一 | Lunter's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lunter's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/27/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%B8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          pwn系列之一
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-02-27 18:07:50" itemprop="dateCreated datePublished" datetime="2018-02-27T18:07:50+08:00">2018-02-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/pwn%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">pwn系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="工具安装"><a href="#工具安装" class="headerlink" title="工具安装"></a>工具安装</h3><ul>
+<li>objdump</li>
+<li>readelf</li>
+<li>IDA Pro</li>
+<li>GDB-PEDA</li>
+<li>Pwntools&nbsp;(具体用法见<a href="http://docs.pwntools.com/en/stable/globals.html" target="_blank" rel="noopener">这儿</a>或者下图)</li>
+</ul>
+<p><img src="https://s2.ax1x.com/2020/03/05/37a5Ct.md.png" alt=""></p>
+<h3 id="软件保护机制"><a href="#软件保护机制" class="headerlink" title="软件保护机制"></a>软件保护机制</h3><ul>
+<li><p>ASLR</p>
+<p>  内存地址随机化机制（address space layout randomization），有以下三种情况：</p>
+<ul>
+<li>0-表示关闭进程地址空间随机化</li>
+<li>1-表示将mmap的基址，stack和vdso页面随机化</li>
+<li>2-表示在1的基础上增加堆（heap）的随机化</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+
+<ul>
+<li><p>NX（DEP）</p>
+<p>  NX即No-eXecute（不可执行）的意思，NX（DEP）的基本原理是将数据所在内存页标识为不可执行，当程序溢出成功转入shellcode时，程序会尝试在数据页面上执行指令，此时CPU就会抛出异常，而不是去执行恶意指令。</p>
+</li>
+</ul>
+<div style='display: none'>
+构造ROP
+</div>
+
+
+<ul>
+<li><p>PIE</p>
+<p>  位置独立的可执行区域（position-independent executables）</p>
+<p>  代码段（.text）、数据段（.data）、未初始化全局变量段（.bss）等固定地址的一个防护技术</p>
+<p>  在每次加载程序时都变换加载地址</p>
+<p>  结果就是找不到要跳转的地址</p>
+</li>
+</ul>
+<div style='display: none'>
+爆破后几位
+
+<p>泄露地址（相对偏移不变）<br><a href="https://www.anquanke.com/post/id/177520" target="_blank" rel="noopener">https://www.anquanke.com/post/id/177520</a></p>
+</div>
+
+
+<ul>
+<li><p>StackGuard(canary)</p>
+<p>  栈溢出保护是一种缓冲区溢出攻击缓解手段，当启用栈保护后，函数开始执行的时候会先往栈里插入cookie信息，当函数真正返回的时候会验证 cookie信息是否合法，如果不合法就停止程序运行。攻击者在覆盖返回地址的时候往往也会将cookie 信息给覆盖掉，导致栈保护检查失败而阻止shellcode的执行。在Linux中我们将cookie信息称为canary。</p>
+<p>  canary的值存储在tls区段中的tcbhead_t结构中,有一个寄存器一直指向这个结构，在×86中是gs，×64中是fs</p>
+</li>
+</ul>
+<div style='display: none'>
+配合格式化字符串漏洞
+
+<p>canary本身的弱点，当<strong>stack_check_fail时，会打印出正在运行中程序的名称，所以，我们只要将</strong>libc_argv[0]覆盖为目标地址</p>
+<p>露一个子进程的Canary，再在另一个子进程栈中伪造Canary</p>
+</div>
+
+<ul>
+<li><p>RELRO</p>
+<p>  <code>gcc-Wl，-z，relro，-z，now</code> 开启full,于是GOT只读，函数在程序载入时就全部解析完毕</p>
+</li>
+</ul>
+<div style='display: none'>
+不可通过修改GOT表
+控制dl_resolve函数
+</div>
+
+<h3 id="GOT-amp-PLT"><a href="#GOT-amp-PLT" class="headerlink" title="GOT&amp;PLT"></a>GOT&amp;PLT</h3><ul>
+<li>GOT(全局偏移量表):表中存放着函数真正的位置</li>
+<li>PLT(过程链接表)</li>
+<li>流程为：PLT-&gt;GOT,如下图所示：</li>
+</ul>
+<p><img src="https://s1.ax1x.com/2020/03/17/8dE3wQ.png" alt=""></p>
+<p>若为第一次调用，则GOT表会进行延迟绑定，此后调用就为真实地址了。</p>
+<h3 id="反调试"><a href="#反调试" class="headerlink" title="反调试"></a>反调试</h3><ul>
+<li>一般地，反调试是通过比较程序在未被调试和被调试两种运行状况下的不同点来判断程序是否处于被调试的状态，进而选择执行正常流程之外的程序功能，如终止程序、删除自身甚至格式化硬盘</li>
+<li>反调试也经常被病毒马所采用，当检测到自己处于调试环境时，则不执行自身的恶意代码，最终躲过安全人员的检测</li>
+</ul>
+<p>常见反调试方法：</p>
+<ul>
+<li>ptrace自身进程<ul>
+<li>在同一时间，进程最多只能被一个调试器进行调试,可以通过调试进程自身，来判断是否已经有其他进程（调试器）的存在</li>
+</ul>
+</li>
+<li>检查父进程名称<ul>
+<li>通常在使用gdb调试时，是通过<code>gdb&lt;TARGET&gt;</code>这种方式进行的，这种方式启动gdb后，gdb fork出子进程执行目标二进制文件。因此，二进制文件的父进程即为调试器，我们可通过检查父进程名称来判断是否是由调试器fork</li>
+</ul>
+</li>
+<li>检查进程运行状态<ul>
+<li>调试器可以通过attach到某个已有进程的方法进行调试这种情况下，被调试进程的父进程便不是调试器了。我们可以通过直接检查进程的运行状态来判断是否被调试，当进程正常运行而未被调试时，/proc/进程ID/status文件中的TracerPid值为0，而当进程被attach后，该值会变为调试器的PID</li>
+</ul>
+</li>
+<li>设置程序运行最大时间<ul>
+<li>由于程序在调试时的断点、检查修改内存等操作，运行时间往往要远大于正常运行时间。所以，一旦程序运行时间过长，便可能是由于正在被调试。具体实现方法是在程序启动时，通过alarm设置定时，到达时则中止程序<ul>
+<li>当我们使用gdb在main函数下断点，稍候片刻后继续执行时，则触发了SIGALRM，进而检测到调试器</li>
+<li>这种方式可以轻易地被绕过，通过设置gdb对signal的处理方式，将SIGALRM忽略而非传递给程序，则alarmHandler便不会被执行</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>检查进程打开的文件描述符<ul>
+<li>如果被调试的进程是通过<code>gdb&lt;TARGET&gt;</code>的方式启动，那么它便是由gdb进程fork得到的。而fork在调用时，父进程所拥有的fd（file descriptor）会被子进程继承。由于gdb在往往会打开多个fd，因此如果进程拥有的fd较多，则可能是继承自gdb的，即进程在被调试。<ul>
+<li>我们检查/proc/self/fd/中是否包含fd为5。由于fd从0开始编号，所以fd为5则说明已经打开了6个文件。如果程序正常运行则不会打开这么多，所以由此来判断是否被调试</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>其他方法 <ul>
+<li>在程序中创建一个子进程定期检查父进程是否被调试</li>
+<li>插入int3指令扰乱调试器的正常行为</li>
+</ul>
+</li>
+</ul>
+<p>参考：北京理工大学慕课</p>
+<h3 id="技巧"><a href="#技巧" class="headerlink" title="技巧"></a>技巧</h3><ul>
+<li><p>无保护机制的尝试:</p>
+<p>  先使用以下命令关掉了整个系统的ASLR</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo 0 &gt; &#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;randomize_va_space</span><br></pre></td></tr></table></figure>
+<p>  再使用以下命令进行编译：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -m32 -fno-stack-protector -z execstack -o test test.c</span><br></pre></td></tr></table></figure>
+<p>  -m32:编译为32位的程序</p>
+<p>  -fno-stack-protector:禁用StackGuard</p>
+<p>  -z execstack:关掉NX</p>
+</li>
+<li><p>如何覆盖到返回地址？</p>
+<p>  可进行手动计算，但我一般使用gdb的peda插件的pattern进行计算。</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern create 100</span><br><span class="line">AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL</span><br><span class="line"></span><br><span class="line">gdb-peda$ pattern offset (AAD</span><br><span class="line">(AAD found at offset: 24</span><br></pre></td></tr></table></figure>
+<p>  这样即可轻松得到覆盖大小。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/pwn/" rel="tag"># pwn</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/09/15/%E5%B8%B8%E8%A7%81%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/" rel="prev" title="常见加密算法">
+      <i class="fa fa-chevron-left"></i> 常见加密算法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/03/05/pwn%E7%B3%BB%E5%88%97%E4%B9%8B%E4%BA%8C/" rel="next" title="pwn系列之二">
+      pwn系列之二 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#工具安装"><span class="nav-number">1.</span> <span class="nav-text">工具安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#软件保护机制"><span class="nav-number">2.</span> <span class="nav-text">软件保护机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GOT-amp-PLT"><span class="nav-number">3.</span> <span class="nav-text">GOT&amp;PLT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反调试"><span class="nav-number">4.</span> <span class="nav-text">反调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#技巧"><span class="nav-number">5.</span> <span class="nav-text">技巧</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lunter"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Lunter</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lulu</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

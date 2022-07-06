@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/favicon-16x16-next.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="对于加固，是将加密后的dex文件与壳文件合并生成新的class.dex文件，然后签名重打包生成加固后的apk文件。而对于壳程序加载原dex文件，是dalvik虚拟机加载加固后的apk里的classes.dex文件，并使用attachBaseContext方法以及onCreate方法进行解密原dex文件并启动原程序。但是无论进行了怎样的加密，最后都是需要经历解密动态加载到内存中的，利用这一点即可进行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="获取dex之dump内存">
+<meta property="og:url" content="http://yoursite.com/2020/04/15/%E8%8E%B7%E5%8F%96dex%E4%B9%8Bdump%E5%86%85%E5%AD%98/index.html">
+<meta property="og:site_name" content="Lunter&#39;s blog">
+<meta property="og:description" content="对于加固，是将加密后的dex文件与壳文件合并生成新的class.dex文件，然后签名重打包生成加固后的apk文件。而对于壳程序加载原dex文件，是dalvik虚拟机加载加固后的apk里的classes.dex文件，并使用attachBaseContext方法以及onCreate方法进行解密原dex文件并启动原程序。但是无论进行了怎样的加密，最后都是需要经历解密动态加载到内存中的，利用这一点即可进行">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2020/04/28/J4hAp9.md.png">
+<meta property="article:published_time" content="2020-04-15T00:40:17.000Z">
+<meta property="article:modified_time" content="2021-02-04T08:57:58.235Z">
+<meta property="article:author" content="Lunter">
+<meta property="article:tag" content="dump内存">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s1.ax1x.com/2020/04/28/J4hAp9.md.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/15/%E8%8E%B7%E5%8F%96dex%E4%B9%8Bdump%E5%86%85%E5%AD%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>获取dex之dump内存 | Lunter's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lunter's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/15/%E8%8E%B7%E5%8F%96dex%E4%B9%8Bdump%E5%86%85%E5%AD%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          获取dex之dump内存
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-15 08:40:17" itemprop="dateCreated datePublished" datetime="2020-04-15T08:40:17+08:00">2020-04-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>对于加固，是将加密后的dex文件与壳文件合并生成新的<code>class.dex</code>文件，然后签名重打包生成加固后的apk文件。而对于壳程序加载原dex文件，是dalvik虚拟机加载加固后的apk里的classes.dex文件，并使用<strong>attachBaseContext</strong>方法以及<strong>onCreate</strong>方法进行解密原dex文件并启动原程序。但是无论进行了怎样的加密，最后都是需要经历解密动态加载到内存中的，利用这一点即可进行dump出dex文件。</p>
+<!--
+
+破解加了dex壳的app，关键是要获得解密后的源dex，现在Android加壳技术大多都是通过DexClassLoader或者隐藏的函数openDexFile来将源dex加载进来，然后动态替换Application来启动源程序，跟Windows上传统的PE文件加壳有一定区别。
+要破解传统的壳，需要跟踪控制流找到OEP，然后把源程序从内存中dump下来e799bee5baa6e997aee7ad94e78988e69d8331333361316661，重建输入表，最困难的就是要跟着外壳的控制流走，安全工程师为了加大破解难度，使用了很多技术来让破解者走得更艰难。安全工程师与破解者对抗的关键点就在寻找OEP的困难性上。
+在Android平台上，正因为新兴的dex加壳技术不成熟，导致有些另类的脱壳方法可以绕过分析算法，直接将源程序dump下来。
+举个例子，安卓在4.0版本以后提供openDexFile这个函数来从内存中加载dex，所需要提供的参数是源dex在内存中的地址，所以只要对这个函数下断，然后从寄存器里找到内存地址，就能将解密后的源dex从内存中dump下来，直接对其反编译就能获得源代码了。
+更进一步，关于openDexFile这个函数，其实它与libdvm.so这个库有密不可分的关系，这个库里提供大量操作dex文件的函数，如果对这个库里的相关函数下断，然后从内存中暴力dump一大块内存区域，经常能直接将内存中的源dex给抓下来。
+
+-->
+
+<h3 id="dump内存法一"><a href="#dump内存法一" class="headerlink" title="dump内存法一"></a>dump内存法一</h3><p>通过分析底层加载dex源码发现<strong>libdvm.so</strong>中的<strong>dvmDexFileOpenPartial</strong>函数，该函数有两个参数，一个是dex的起始地址，一个是dex的大小。于是可以使用ida进行动态调试获取信息。</p>
+<ul>
+<li><p>安装好apk，并以调试方式运行</p>
+</li>
+<li><p>启动调试服务并进行端口转发</p>
+</li>
+<li><p>pull出<code>/system/lib/libdvm.so</code>文件</p>
+</li>
+</ul>
+<a id="more"></a>
+
+<ul>
+<li><p>将<code>libdvm.so</code>加载入ida并在<strong>dvmDexFileOpenPartial</strong>函数开始处下断点</p>
+</li>
+<li><p>attach进程<br>  点击<code>Debugger-&gt;Attach to process</code>，在选择框中选择apk对应的包名（即apk运行的进程名）并记录下<strong>ID</strong>，然后点击<strong>OK</strong></p>
+</li>
+<li><p>在PC的xxx（此处为ID）端口与手机的相应端口之间建立连接<br>  <code>adb forward tcp:8700 jdwp:xxx（此处为ID）</code></p>
+</li>
+<li><p>使用<strong>jdb</strong>在<strong>java</strong>层将apk attach到电脑上<br>  <code>jdb -connect com.sun.jdi.SocketAttach:hostname=localhost,port=8700</code></p>
+</li>
+<li><p><strong>F9</strong>运行ida，一路ok程序停在预先下好的断点处<br>  此时寄存器R0中对应的就是dex文件的起始地址，R1对应的就是dex文件的大小</p>
+</li>
+<li><p>使用IDC进行dump内存获取dex，脚本如下：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static main(void)</span><br><span class="line">&#123;</span><br><span class="line">	auto fp, dex_addr, end_addr;</span><br><span class="line">	fp &#x3D; fopen(&quot;E:\\Android\\temp\\dump.dex&quot;, &quot;wb&quot;);</span><br><span class="line">	end_addr &#x3D; r0 + r1;</span><br><span class="line">	for(dex_addr &#x3D; r0; dex_addr &lt; end_addr; dex_addr++)</span><br><span class="line">		fputc(Byte(dex_addr), fp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>因为Dalvik虚拟机下对运行的dex文件做了优化，真正在内存中运行的是odex文件</p>
+<ul>
+<li>使用baksmali对odex文件进行反编译</li>
+<li>使用smali进行编译成dex文件</li>
+</ul>
+</li>
+<li><p>得到了dex文件即可对其进行分析了</p>
+</li>
+</ul>
+<h3 id="dump内存法二"><a href="#dump内存法二" class="headerlink" title="dump内存法二"></a>dump内存法二</h3><ul>
+<li><p>按动态调试流程进行</p>
+</li>
+<li><p>在获取到<strong>进程ID</strong>后打开<code>adb shell</code><br>  输入<code>cat /proc/xxx（进程ID）/maps</code>，在结果里找到对应程序的dex文件地址</p>
+</li>
+<li><p>在ida中使用IDC进行dump内存获取dex，脚本如下：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static main(void)&#123;</span><br><span class="line">    auto fp, beg_addr, end_addr, dex_addr;	</span><br><span class="line">    fp &#x3D; fopen(&quot;E:\\Android\\atemp\\dump.dex&quot;, &quot;wb&quot;);	</span><br><span class="line">    beg_addr &#x3D; 0xaaaaaaaa;	</span><br><span class="line">    end_addr &#x3D; 0xbbbbbbbb;	</span><br><span class="line">    for (dex_addr &#x3D; beg_addr; dex_addr &lt; end_addr; dex_addr++ )	</span><br><span class="line">        fputc(Byte(dex_addr), fp);	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>但此法有问题，目前还没弄明白，有待研究，如下图：<br>  <img src="https://s1.ax1x.com/2020/04/28/J4hAp9.md.png" alt=""></p>
+<p>  圈中的是我用<strong>法一</strong>得到的，可以dump出来，但在此时进入<strong>法二</strong>的进程<strong>maps</strong>（图中横线）中却得不到真正的dex地址</p>
+</li>
+</ul>
+<h3 id="dump内存法三"><a href="#dump内存法三" class="headerlink" title="dump内存法三"></a>dump内存法三</h3><p>使用<strong>ZjDroid</strong>。ZjDroid是基于Xposed Framewrok的动态逆向分析模块，逆向分析者可以通过ZjDroid完成以下工作：</p>
+<ul>
+<li><p>DEX文件的内存dump</p>
+</li>
+<li><p>基于Dalvik关键指针的内存BackSmali，有效破解加固应用</p>
+</li>
+<li><p>敏感API的动态监控</p>
+</li>
+<li><p>指定内存区域数据dump</p>
+</li>
+<li><p>获取应用加载DEX信息。</p>
+</li>
+<li><p>获取指定DEX文件加载类信息。</p>
+</li>
+<li><p>dump Dalvik java堆信息。</p>
+</li>
+<li><p>在目标进程动态运行lua脚本。</p>
+</li>
+</ul>
+<h3 id="art虚拟机"><a href="#art虚拟机" class="headerlink" title="art虚拟机"></a>art虚拟机</h3><p>上述都是Dalvik虚拟机下的。对于art虚拟机下，dump的点在于libart.so的OpenMemory函数。而且dump出来的文件是OAT文件，OAT文件类似于Dalvik的ODEX文件。由于OAT文件中包含完整的DEX文件，取出OAT文件的方法非常简单：定位OAT文件中的<strong>DexFile</strong>结构体然后将数据完整导出即可。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/dump%E5%86%85%E5%AD%98/" rel="tag"># dump内存</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/27/ida%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/" rel="prev" title="ida动态调试">
+      <i class="fa fa-chevron-left"></i> ida动态调试
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/22/%E5%8F%8D%E8%B0%83%E8%AF%95%E5%88%86%E6%9E%90/" rel="next" title="反调试分析">
+      反调试分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#dump内存法一"><span class="nav-number">1.</span> <span class="nav-text">dump内存法一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dump内存法二"><span class="nav-number">2.</span> <span class="nav-text">dump内存法二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dump内存法三"><span class="nav-number">3.</span> <span class="nav-text">dump内存法三</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#art虚拟机"><span class="nav-number">4.</span> <span class="nav-text">art虚拟机</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lunter"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Lunter</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lulu</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
