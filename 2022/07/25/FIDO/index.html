@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-16x16-next.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico">
+  <link rel="mask-icon" href="/images/favicon-16x16-next.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="FIDO基本信息架构 具体流程  通过应用π演算对协议及其需要满足的安全目标进行描述；  Proverif对用户代码进行语法检测、类型检测；  Proverif根据攻击者子句规则、协议子句规则及安全目标翻译规则，将应用π演算描述下的协议会话、安全目标翻译成Horn子句；  Proverif根据Horn子句推理规则将所以子句结合推理，产生大量推导子句，然后根据消解算法进行处理（保证推理不陷入循环）；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FIDO">
+<meta property="og:url" content="http://yoursite.com/2022/07/25/FIDO/index.html">
+<meta property="og:site_name" content="Lunter&#39;s blog">
+<meta property="og:description" content="FIDO基本信息架构 具体流程  通过应用π演算对协议及其需要满足的安全目标进行描述；  Proverif对用户代码进行语法检测、类型检测；  Proverif根据攻击者子句规则、协议子句规则及安全目标翻译规则，将应用π演算描述下的协议会话、安全目标翻译成Horn子句；  Proverif根据Horn子句推理规则将所以子句结合推理，产生大量推导子句，然后根据消解算法进行处理（保证推理不陷入循环）；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=ZGRlZDQzNzI4YzhjMmYwMGQzNzNlZjU4YjAwOTg5YzJfWlFUZ2FpNjRTVW1WSGlZZDZyVUxPUjB6cnlhdDRHZlNfVG9rZW46Ym94Y253bXVYTlZKSUF3UlJEZFJ2S1lqalRoXzE2NTg3MDY2MTA6MTY1ODcxMDIxMF9WNA">
+<meta property="og:image" content="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=NjIwYTBiMmI4ZjhhNWU5Mjg0Nzc0YzY3NDg3M2RhMmRfeFhWWm5SUkUxQWtta1p6czFDOTdJak9XOTRodEVralpfVG9rZW46Ym94Y25rc254cU9ndDFONmpSQnNyOHlUYmhlXzE2NTg3MDY2MTA6MTY1ODcxMDIxMF9WNA">
+<meta property="og:image" content="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=YWU4ODljYmU0NzE2ZGVkY2QwNWRkOGIwZTg5ZGU0ZjRfd0NTZkh3Zm1zNmE2TVR2R2tMdUJJNzd0ZUhKNjRRdGpfVG9rZW46Ym94Y245Vk41QUxqMFowd0Z2dEEzNGpTQ3FiXzE2NTg3MDY2MTA6MTY1ODcxMDIxMF9WNA">
+<meta property="og:image" content="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=MzBhZGYzMmFhMmI1OGFkZTIyMDVlYjQzNTA4ZGNiOWFfTThwdjA4SUpwV2hLSUlPTVVsYVJLQ2hPVVNKb0NIdE5fVG9rZW46Ym94Y25aaGlrTnI5V3VOMXFVUllzWkhINFFjXzE2NTg3MDY3MTE6MTY1ODcxMDMxMV9WNA">
+<meta property="article:published_time" content="2022-07-24T23:53:16.000Z">
+<meta property="article:modified_time" content="2022-07-24T23:57:27.012Z">
+<meta property="article:author" content="Lunter">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=ZGRlZDQzNzI4YzhjMmYwMGQzNzNlZjU4YjAwOTg5YzJfWlFUZ2FpNjRTVW1WSGlZZDZyVUxPUjB6cnlhdDRHZlNfVG9rZW46Ym94Y253bXVYTlZKSUF3UlJEZFJ2S1lqalRoXzE2NTg3MDY2MTA6MTY1ODcxMDIxMF9WNA">
+
+<link rel="canonical" href="http://yoursite.com/2022/07/25/FIDO/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>FIDO | Lunter's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lunter's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/07/25/FIDO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          FIDO
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-07-25 07:53:16" itemprop="dateCreated datePublished" datetime="2022-07-25T07:53:16+08:00">2022-07-25</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="FIDO基本信息"><a href="#FIDO基本信息" class="headerlink" title="FIDO基本信息"></a>FIDO基本信息</h3><h4 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h4><p><img src="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=ZGRlZDQzNzI4YzhjMmYwMGQzNzNlZjU4YjAwOTg5YzJfWlFUZ2FpNjRTVW1WSGlZZDZyVUxPUjB6cnlhdDRHZlNfVG9rZW46Ym94Y253bXVYTlZKSUF3UlJEZFJ2S1lqalRoXzE2NTg3MDY2MTA6MTY1ODcxMDIxMF9WNA" alt="img"></p>
+<h4 id="具体流程"><a href="#具体流程" class="headerlink" title="具体流程"></a>具体流程</h4><p><img src="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=NjIwYTBiMmI4ZjhhNWU5Mjg0Nzc0YzY3NDg3M2RhMmRfeFhWWm5SUkUxQWtta1p6czFDOTdJak9XOTRodEVralpfVG9rZW46Ym94Y25rc254cU9ndDFONmpSQnNyOHlUYmhlXzE2NTg3MDY2MTA6MTY1ODcxMDIxMF9WNA" alt="img"></p>
+<ol>
+<li><p>通过应用π演算对协议及其需要满足的安全目标进行描述；</p>
+</li>
+<li><p>Proverif对用户代码进行语法检测、类型检测；</p>
+</li>
+<li><p>Proverif根据攻击者子句规则、协议子句规则及安全目标翻译规则，将应用π演算描述下的协议会话、安全目标翻译成Horn子句；</p>
+</li>
+<li><p>Proverif根据Horn子句推理规则将所以子句结合推理，产生大量推导子句，然后根据消解算法进行处理（保证推理不陷入循环）；</p>
+</li>
+<li><p>如果推导出的子句违背某一安全性质，Proverif会收集相关子句，并通过推导树在Horn子句层产生一条违背安全目标的路径；</p>
+</li>
+<li><p>对违背安全目标的路径在π演算层进行攻击重构。</p>
+</li>
+</ol>
+<p>安全目标：机密性、认证性、观察等价性等</p>
+<h4 id="三、安全协议最小化假设分析方法"><a href="#三、安全协议最小化假设分析方法" class="headerlink" title="三、安全协议最小化假设分析方法"></a>三、安全协议最小化假设分析方法</h4><ul>
+<li><p>一般化：</p>
+</li>
+<li><ul>
+<li>描述：自然语言提炼安全协议流程、安全假设、安全目标</li>
+<li>建模：分析工具（语句）进行描述</li>
+<li>分析：自动化输出</li>
+</ul>
+</li>
+</ul>
+<p>不足：描述不准确、完整；建模不准确；场景不同安全假设、攻击者能力都不同；结果分析不规范</p>
+<h5 id="3-2、形式化描述方法"><a href="#3-2、形式化描述方法" class="headerlink" title="3.2、形式化描述方法"></a>3.2、形式化描述方法</h5><h6 id="3-2-1、协议流程"><a href="#3-2-1、协议流程" class="headerlink" title="3.2.1、协议流程"></a>3.2.1、协议流程</h6><ol>
+<li><p>协议阶段划分</p>
+</li>
+<li><p>协议实体划分</p>
+</li>
+<li><p>协议初始知识</p>
+</li>
+<li><p>协议操作</p>
+</li>
+</ol>
+<h6 id="3-2-2、安全假设"><a href="#3-2-2、安全假设" class="headerlink" title="3.2.2、安全假设"></a>3.2.2、安全假设</h6><p>将攻击者的能力按环境做区分，有强有弱</p>
+<p>根据密码算法（是否有漏洞）、数据（实体是否易被攻击导致数据泄露）、信道（私密信道会不会变成公开信道：诚实实体间未作身份校验、下载了恶意软件导致信道被中间人等）、其他等信息的安全与否建不同的模型</p>
+<h6 id="3-2-3、安全目标"><a href="#3-2-3、安全目标" class="headerlink" title="3.2.3、安全目标"></a>3.2.3、安全目标</h6><p>####### 认证性目标</p>
+<p>认证分类原则</p>
+<ol>
+<li><p>存活</p>
+</li>
+<li><p>弱认证</p>
+</li>
+<li><p>非单射认证</p>
+</li>
+<li><p>单射认证</p>
+</li>
+</ol>
+<p>####### 机密性目标</p>
+<p>在主动攻击者和被动攻击者的情况下，不同数据要求不同的机密性</p>
+<p>####### 隐私性目标</p>
+<p>敏感数据隐私性：可以转化为主动攻击者环境下的机密性</p>
+<p>用户行为隐私性：<em>不可链接性指的是在协议的多次会话中，攻击者无法区分会话中的消息是否来源于同一角色，它属于隐私性的一种。不可链接性可以直接作为形式化的语言描述安全协议的目标。而其他类型的隐私性目标可以使用进程等价性来进行描述</em>（可以转化为观测等价性）</p>
+<h5 id="3-3、形式化建模方法"><a href="#3-3、形式化建模方法" class="headerlink" title="3.3、形式化建模方法"></a>3.3、形式化建模方法</h5><h6 id="3-3-1、Proverif的能力"><a href="#3-3-1、Proverif的能力" class="headerlink" title="3.3.1、Proverif的能力"></a>3.3.1、Proverif的能力</h6><p>协议流程的建模，协议流程包含协议实体、实体的初始知识和协议的数据操作等。协议每个实体的具体操作使用进程宏 ( process macro）来描述，其中，进程宏的参数，以及全局变量参数，是每个实体的初始知识。通过在预先定义的信道上输入或输出 (in/out）消息，可以实现不同实体之间的通信。通过预先定义的函数，如加解密、签名函数，实现数据操作。</p>
+<p>安全假设的建模包括密码算法、信道、数据保护等。通过应用π-演算中的函数(function）和等式（equation)，可以对密码算法进行建模。通过应用π-演算中包含的公开信道（public channel）和私密信道(private channel)，可以对安全假设中公开与非公开、非对称信道（Proverif手册6.7.4）的信道进行建模。</p>
+<p>应用π-演算提供的询问（query）语句可以描述安全协议的安全目标。其中，attacker 关键字可以用于建模机密性目标，event， inj-event 关键字可以用于建模非单射协议和单射协议等认证性目标，equivalence, differ 等语句可以用于建模隐私性目标。</p>
+<p>####### 3.3.2、进程通信场景下的恶意实体信道建模</p>
+<p>基于Proverif的公开信道和私密信道进行组合</p>
+<h6 id="3-3-3、不可链接性建模"><a href="#3-3-3、不可链接性建模" class="headerlink" title="3.3.3、不可链接性建模"></a>3.3.3、不可链接性建模</h6><p>在验证不可链接性时可以转化为观测等价性，Proverif可以验证在外部攻击者对观测下，协议是否满足观测等价性。对于某些场景需要观测恶意实体时，则需要对恶意实体进行建模，可基于主动攻击者对初始知识进行扩充、对公开信道进行缩减，从而实现恶意实体的建模</p>
+<h5 id="3-4、最小化安全假设的验证方案"><a href="#3-4、最小化安全假设的验证方案" class="headerlink" title="3.4、最小化安全假设的验证方案"></a>3.4、最小化安全假设的验证方案</h5><p>协议在最少的安全假设下能够达到所需的安全目标：找出协议的固定安全假设和可变安全假设，通过改变输入的安全假设并多次运行Proverif即可</p>
+<p>可变安全假设过多则会导致遍历很困难，因此提出最小化假设算法：带缓存多遍历</p>
+<h4 id="四、FIDO"><a href="#四、FIDO" class="headerlink" title="四、FIDO"></a>四、FIDO</h4><p><img src="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=YWU4ODljYmU0NzE2ZGVkY2QwNWRkOGIwZTg5ZGU0ZjRfd0NTZkh3Zm1zNmE2TVR2R2tMdUJJNzd0ZUhKNjRRdGpfVG9rZW46Ym94Y245Vk41QUxqMFowd0Z2dEEzNGpTQ3FiXzE2NTg3MDY2MTA6MTY1ODcxMDIxMF9WNA" alt="img"></p>
+<p><img src="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=MzBhZGYzMmFhMmI1OGFkZTIyMDVlYjQzNTA4ZGNiOWFfTThwdjA4SUpwV2hLSUlPTVVsYVJLQ2hPVVNKb0NIdE5fVG9rZW46Ym94Y25aaGlrTnI5V3VOMXFVUllzWkhINFFjXzE2NTg3MDY3MTE6MTY1ODcxMDMxMV9WNA" alt="img"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/14/PWN%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="prev" title="PWN环境搭建">
+      <i class="fa fa-chevron-left"></i> PWN环境搭建
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#FIDO基本信息"><span class="nav-number">1.</span> <span class="nav-text">FIDO基本信息</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#架构"><span class="nav-number">1.1.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#具体流程"><span class="nav-number">1.2.</span> <span class="nav-text">具体流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、安全协议最小化假设分析方法"><span class="nav-number">1.3.</span> <span class="nav-text">三、安全协议最小化假设分析方法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2、形式化描述方法"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.2、形式化描述方法</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-1、协议流程"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">3.2.1、协议流程</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-2、安全假设"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">3.2.2、安全假设</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-3、安全目标"><span class="nav-number">1.3.1.3.</span> <span class="nav-text">3.2.3、安全目标</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3、形式化建模方法"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.3、形式化建模方法</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#3-3-1、Proverif的能力"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">3.3.1、Proverif的能力</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-3-3、不可链接性建模"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">3.3.3、不可链接性建模</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4、最小化安全假设的验证方案"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.4、最小化安全假设的验证方案</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、FIDO"><span class="nav-number">1.4.</span> <span class="nav-text">四、FIDO</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Lunter"
+      src="/images/avatar.jpeg">
+  <p class="site-author-name" itemprop="name">Lunter</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lulu</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
