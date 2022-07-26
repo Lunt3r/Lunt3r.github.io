@@ -260,6 +260,100 @@
 <p>可变安全假设过多则会导致遍历很困难，因此提出最小化假设算法：带缓存多遍历</p>
 <h4 id="四、FIDO"><a href="#四、FIDO" class="headerlink" title="四、FIDO"></a>四、FIDO</h4><p><img src="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=YWU4ODljYmU0NzE2ZGVkY2QwNWRkOGIwZTg5ZGU0ZjRfd0NTZkh3Zm1zNmE2TVR2R2tMdUJJNzd0ZUhKNjRRdGpfVG9rZW46Ym94Y245Vk41QUxqMFowd0Z2dEEzNGpTQ3FiXzE2NTg3MDY2MTA6MTY1ODcxMDIxMF9WNA" alt="img"></p>
 <p><img src="https://lp8cxycnxn.feishu.cn/space/api/box/stream/download/asynccode/?code=MzBhZGYzMmFhMmI1OGFkZTIyMDVlYjQzNTA4ZGNiOWFfTThwdjA4SUpwV2hLSUlPTVVsYVJLQ2hPVVNKb0NIdE5fVG9rZW46Ym94Y25aaGlrTnI5V3VOMXFVUllzWkhINFFjXzE2NTg3MDY3MTE6MTY1ODcxMDMxMV9WNA" alt="img"></p>
+<p>`import itertools</p>
+<p>class Test:</p>
+<p>​    print(“111”)</p>
+<p>​    def <strong>init</strong>(self) -&gt; None:</p>
+<p>​        self.ttt = Auth_fields()</p>
+<p>​        self.entities = Auth_entities()</p>
+<p>​        print(“222”)</p>
+<p>​    def te(self):</p>
+<p>​        print(“333”)</p>
+<p>class All_entities:</p>
+<p>​    ‘’’</p>
+<p>   a parant class for all possible combinations of malicous entities</p>
+<p>   you can just write all the possible malicous in subclass for each phase(reg/auth)</p>
+<p>   this parant class will generate all the combinations.</p>
+<p>   version2 is a reduce plan</p>
+<p>​    ‘’’</p>
+<p>​    def <strong>init</strong>(self):</p>
+<p>​        self.all_entities = []</p>
+<p>​    def get_all_scenes(self): # a scheme to get all combinations of the entities</p>
+<p>​        self.entities = []</p>
+<p>​        for delnum in range(len(self.all_entities) + 1):</p>
+<p>​            for row_numbers in itertools.combinations(range(len(self.all_entities)), delnum):</p>
+<p>​                temp = []</p>
+<p>​                for i in row_numbers:</p>
+<p>​                    temp.append(self.all_entities[i])</p>
+<p>​                # print(Entities(temp,row_numbers).entities)</p>
+<p>​                print(“*****”)</p>
+<p>​                print(row_numbers)</p>
+<p>​                self.entities.append(Entities(temp,row_numbers))</p>
+<p>class Auth_entities(All_entities):</p>
+<p>​    def <strong>init</strong>(self):</p>
+<p>​        All_entities.<strong>init</strong>(self)</p>
+<p>​        self.all_entities = []</p>
+<p>​        self.all_entities.append(“AuthUA(https, c, uname, ltype)|\n”)</p>
+<p>​        self.all_entities.append(“AuthUC(c, MC, fakefacetid, ltype)|\n”)</p>
+<p>​        self.all_entities.append(“AuthUC(CU, c, facetid, ltype)|\n”)</p>
+<p>​        self.all_entities.append(“AuthUC(c, c, fakefacetid, ltype)|\n”)</p>
+<p>​        self.all_entities.append(“AuthASM(c,AM,token,fakecallerid,atype,ltype)|\n”)</p>
+<p>​        self.all_entities.append(“AuthASM(MC,c,token,callerid,atype,ltype)|\n”)</p>
+<p>​        self.all_entities.append(“AuthASM(c,c,token,fakecallerid,atype,ltype)|\n”)</p>
+<p>​        self.all_entities.append(“AuthAutr(c,aaid,wrapkey,cntr,tr,atype,ltype)| \n”)</p>
+<p>​        self.get_all_scenes()</p>
+<p>class Entities: # indicate a specific combination of malicious entities</p>
+<p>​    def <strong>init</strong>(self, entities, row_numbers): # initiate by a list and which rows in the list to add</p>
+<p>​        self.nums = len(entities) # how many entities</p>
+<p>​        self.write = “” # how to write the malicious entities in .pv file</p>
+<p>​        if self.nums == 0:</p>
+<p>​            self.name = “mali-“ + str(self.nums)</p>
+<p>​        else:</p>
+<p>​            self.name = “mali-“ + str(self.nums) + “ “</p>
+<p>​            for i in row_numbers:</p>
+<p>​                self.name += “,” + str(i)</p>
+<p>​        for item in entities:</p>
+<p>​            self.write += item</p>
+<p>​        self.entities = entities</p>
+<p>​        self.row_numbers = row_numbers</p>
+<p>class All_fields:</p>
+<p>​    ‘’’</p>
+<p>​    A parent class for all possible combinations of the compromised fields</p>
+<p>​    based on the command line parameter, it will choose the “full” version</p>
+<p>​    to analyze all compromise scenarios of the fields, or the “simple” version</p>
+<p>​    which do not consider the compromise of the fields.</p>
+<p>​    ‘’’</p>
+<p>​    def <strong>init</strong>(self):</p>
+<p>​        self.all_fields = []</p>
+<p>​        self.all_fields.append(“out(c,token);\n”)</p>
+<p>​        self.all_fields.append(“out(c,wrapkey);\n”)</p>
+<p>class Fields: # indicate a specific combination of compromised fields</p>
+<p>​    def <strong>init</strong>(self, fields): # initiate by a list</p>
+<p>​        self.nums = len(fields)  # number of the malicious fields</p>
+<p>​        self.write = “” # how to write those fields in .pv file</p>
+<p>​        self.name = “fields-“ + str(self.nums) # give it a name to generate the output files</p>
+<p>​        for item in fields:</p>
+<p>​            self.write += item</p>
+<p>​        self.fields = fields</p>
+<p>class Auth_fields(All_fields): # paricular case in Auth</p>
+<p>​    def <strong>init</strong>(self):</p>
+<p>​        All_fields.<strong>init</strong>(self)</p>
+<p>​        self.all_fields.append(“out(c,skAU);\n”)</p>
+<p>​        self.all_fields.append(“out(c,cntr);\n”)</p>
+<p>​        self.all_fields.append(“out(c,kid);\n”)</p>
+<p>​        self.get_all_scenes()</p>
+<p>​    def get_all_scenes(self):</p>
+<p>​        print(“analyzing the full scenarios.”)</p>
+<p>​        self.fields = []</p>
+<p>​        for delnum in range(len(self.all_fields)+ 1) :</p>
+<p>​            for pre in itertools.combinations(self.all_fields, delnum):</p>
+<p>​                # print(Fields(pre).fields)</p>
+<p>​                self.fields.append(Fields(pre))</p>
+<p>if <strong>name</strong> == “<strong>main</strong>“:</p>
+<p>​    a = Test()</p>
+<p>​    # a.<strong>init</strong>()</p>
+<p>​    print(“444”)</p>
+<p>​    print(a.entities.entities[23].write)`</p>
 
       
     </div>
