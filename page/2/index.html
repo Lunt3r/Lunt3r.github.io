@@ -155,231 +155,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/25/%E6%AF%95%E8%AE%BE%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/25/%E6%AF%95%E8%AE%BE%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">毕设过程中的小问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-25 21:52:53" itemprop="dateCreated datePublished" datetime="2020-03-25T21:52:53+08:00">2020-03-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%AF%95%E8%AE%BE%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">毕设系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="VSCode自动进行格式排版"><a href="#VSCode自动进行格式排版" class="headerlink" title="VSCode自动进行格式排版"></a>VSCode自动进行格式排版</h3><ol>
-<li><p>下载<strong>ESLint</strong>插件</p>
-</li>
-<li><p>进入<code>文件-&gt;首选项-&gt;设置-&gt;扩展-&gt;ESLint-&gt;在settings.json中编辑</code></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/03/25/%E6%AF%95%E8%AE%BE%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%B0%8F%E9%97%AE%E9%A2%98/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/25/so%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/25/so%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">so的加载过程</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-25 16:07:38" itemprop="dateCreated datePublished" datetime="2020-03-25T16:07:38+08:00">2020-03-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>linker的工作原理：将目标SO文件的LOAD段映射内存，解析文件格式，做好符号重定位，再调用init/init_array方法等等</p>
-<p>可以自己实现类似于linker的加载代码，而不是通过调用dlopen函数来加载解释器SO</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/21/vue%E5%92%8Cflask%E7%9A%84%E5%89%8D%E5%90%8E%E7%AB%AF%E9%80%9A%E4%BF%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-      <meta itemprop="name" content="Lunter">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lunter's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/21/vue%E5%92%8Cflask%E7%9A%84%E5%89%8D%E5%90%8E%E7%AB%AF%E9%80%9A%E4%BF%A1/" class="post-title-link" itemprop="url">vue和flask的前后端通信</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-21 11:51:54" itemprop="dateCreated datePublished" datetime="2020-03-21T11:51:54+08:00">2020-03-21</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%AF%95%E8%AE%BE%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">毕设系列</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>由于项目是前后端分离的，前端用的vue-elemnet框架，后端用的是flask。而项目的最终是要将数据库中的数据通过flask读取然后传给前端进行展示，于是前后端之间的数据传输在所难免。询问朋友后决定使用<strong>axios</strong>进行数据的传输。</p>
-<h3 id="axios"><a href="#axios" class="headerlink" title="axios"></a>axios</h3><ul>
-<li><p>安装<br><code>npm install axios</code><br><code>npm install --save axios vue-axios</code></p>
-</li>
-<li><p>在<strong>main.js</strong>中导入<br><code>import axios from &#39;axios&#39;</code><br><code>import Vueaxios from &#39;vue-axios&#39;</code><br><code>Vue.use(Vueaxios, axios)</code></p>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/03/21/vue%E5%92%8Cflask%E7%9A%84%E5%89%8D%E5%90%8E%E7%AB%AF%E9%80%9A%E4%BF%A1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/19/Vue-ElementUI%E5%AD%A6%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -962,10 +737,264 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/28/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/28/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">Android逆向基础</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-28 10:31:12" itemprop="dateCreated datePublished" datetime="2020-02-28T10:31:12+08:00">2020-02-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Android系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Android是基于Linux内核的操作系统，大多是是基于ARM架构的，于是要熟悉一下ARM相关内容。</p>
+<h3 id="Android开发环境的安装"><a href="#Android开发环境的安装" class="headerlink" title="Android开发环境的安装"></a>Android开发环境的安装</h3><p>安装JDK、NDK、SDK，，并配置好环境变量。</p>
+<h3 id="模拟器的选择"><a href="#模拟器的选择" class="headerlink" title="模拟器的选择"></a>模拟器的选择</h3><p>可以使用SDK自带的模拟器（最推荐，虽然慢但是出问题的概率最小），也可使用其他模拟器，如雷电、逍遥等。由于是x86架构，所以在进行调试时要使用<code>android_x86_server</code>。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/02/28/Android%E9%80%86%E5%90%91%E5%9F%BA%E7%A1%80/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/16/docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/04/16/docker/" class="post-title-link" itemprop="url">docker</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-16 23:28:03" itemprop="dateCreated datePublished" datetime="2019-04-16T23:28:03+08:00">2019-04-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>安装环境：Win10 专业版 </p>
+<ul>
+<li><p>下载<strong>Docker Desktop for Windows</strong>：<a href="https://hub.docker.com/editions/community/docker-ce-desktop-windows" target="_blank" rel="noopener">下载地址</a></p>
+</li>
+<li><p>下载完进行安装</p>
+</li>
+<li><p>电脑右下角会出现一个小鲸鱼的图标，显示<strong>Docker Desktop is running</strong></p>
+</li>
+<li><p>至此安装已经完成，可在<strong>cmd</strong>中进行使用了</p>
+</li>
+</ul>
+<h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><ul>
+<li><p>镜像：类似于我们在使用虚拟机前所需下载的系统镜像文件，可通过<code>pull</code>指令从Docker Hub仓库进行下载</p>
+</li>
+<li><p>容器：类似于正在运行中的一个虚拟机</p>
+</li>
+<li><p>tar文件：类似于VM中的vmdk文件，将一个镜像直接保存为一个tar文件，通过<code>load</code>指令可以直接加载成一个镜像</p>
+</li>
+<li><p>Dockerfile文件：一个配置文件，写入“如何构建”的步骤来指定一个镜像如何构建，通过<code>build</code>指令进行构建</p>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/04/16/docker/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/16/MySQL%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpeg">
+      <meta itemprop="name" content="Lunter">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lunter's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/16/MySQL%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">MySQL基础</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-01-16 09:26:45" itemprop="dateCreated datePublished" datetime="2019-01-16T09:26:45+08:00">2019-01-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">数据库系列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="基础语法"><a href="#基础语法" class="headerlink" title="基础语法"></a>基础语法</h3><ul>
+<li><p><code>create DATABASE RUNOOB;</code>：创建数据库 </p>
+</li>
+<li><p><code>drop database RUNOOB;</code> ：删除数据库</p>
+</li>
+<li><p><code>use RUNOOB;</code>：选择数据库</p>
+</li>
+<li><p><code>CREATE TABLE table_name (column_name column_type)ENGINE=InnoDB DEFAULT CHARSET=utf8;</code>：创建数据表</p>
+</li>
+<li><p><code>DROP TABLE table_name ;</code>：删除数据表</p>
+</li>
+<li><p><code>INSERT INTO table_name ( field1, field2,...fieldN ) VALUES ( value1, value2,...valueN );</code>：插入数据</p>
+</li>
+<li><p><code>SELECT column_name,column_name FROM table_name [WHERE Clause];</code>：查询数据</p>
+</li>
+<li><p><code>UPDATE table_name SET field1=new-value1, field2=new-value2 [WHERE Clause];</code>：更新数据</p>
+</li>
+<li><p><code>DELETE FROM table_name [WHERE Clause];</code>：删除数据</p>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/01/16/MySQL%E5%9F%BA%E7%A1%80/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1033,7 +1062,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
